@@ -33,6 +33,11 @@ init_auth_state()
 st.markdown(load_global_styles(), unsafe_allow_html=True)
 
 if not st.session_state.get("logged_in"):
+    st.markdown("""
+        <style>
+            section[data-testid="stSidebar"] { display: none !important; }
+        </style>
+    """, unsafe_allow_html=True)
     render_auth_screen()
     st.stop()
 
