@@ -84,16 +84,17 @@ with st.sidebar:
     # NAVIGATION
 
     nav_items = [
-        ("Dashboard", "app.py", "Chargement dashboard..."),
-        ("Analyse IA", "pages/analyse.py", "Préparation analyse..."),
-        ("Portefeuille", "pages/portefeuille.py", "Chargement portefeuille..."),
-        ("Historique", "pages/historique.py", "Chargement historique..."),
-        ("Profil", "pages/profil.py", "Chargement profil..."),
+        ("Dashboard",    "app.py",                  "Chargement dashboard..."),
+        ("Analyse IA",   "pages/analyse.py",         "Préparation analyse..."),
+        ("Portefeuille", "pages/portefeuille.py",    "Chargement portefeuille..."),
+        ("Historique",   "pages/historique.py",      "Chargement historique..."),
+        ("Profil",       "pages/profil.py",           "Chargement profil..."),
     ]
 
     for label, page, msg in nav_items:
 
-        if st.button(label, use_container_width=True):
+        # FIX : key unique préfixée "nav_" pour éviter le conflit avec les boutons Quick Actions
+        if st.button(label, use_container_width=True, key=f"nav_{label}"):
 
             if page != "app.py":
                 nav_with_transition(page, msg)
@@ -167,7 +168,8 @@ with st.sidebar:
 
     st.markdown("<div style='height:1rem'></div>", unsafe_allow_html=True)
 
-    if st.button("Déconnexion", use_container_width=True):
+    # FIX : key unique pour le bouton Déconnexion
+    if st.button("Déconnexion", use_container_width=True, key="nav_logout"):
         logout()
         st.switch_page("app.py")
 
@@ -226,7 +228,7 @@ st.markdown(
         </div>
 
         <div class="page-subtitle" style="max-width:760px;">
-            Analysez les marchés financiers avec l’intelligence artificielle,
+            Analysez les marchés financiers avec l'intelligence artificielle,
             optimisez votre portefeuille et recevez des recommandations
             personnalisées selon votre profil investisseur.
         </div>
@@ -476,10 +478,12 @@ c1, c2, c3 = st.columns(3)
 
 with c1:
 
+    # FIX : key "qa_analyse" distincte de "nav_Analyse IA"
     if st.button(
         "Lancer une analyse IA",
         use_container_width=True,
-        type="primary"
+        type="primary",
+        key="qa_analyse"
     ):
 
         nav_with_transition(
@@ -489,9 +493,11 @@ with c1:
 
 with c2:
 
+    # FIX : key "qa_portefeuille" distincte de "nav_Portefeuille"
     if st.button(
         "Voir portefeuille",
-        use_container_width=True
+        use_container_width=True,
+        key="qa_portefeuille"
     ):
 
         nav_with_transition(
@@ -501,9 +507,11 @@ with c2:
 
 with c3:
 
+    # FIX : key "qa_historique" distincte de "nav_Historique"
     if st.button(
         "Voir historique",
-        use_container_width=True
+        use_container_width=True,
+        key="qa_historique"
     ):
 
         nav_with_transition(
