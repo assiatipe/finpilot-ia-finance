@@ -1845,24 +1845,24 @@ if not st.session_state.analysis_done:
     c1, c2, c3 = st.columns(3)
 
     with c1:
-        if st.button("Précédent", use_container_width=True, disabled=step == 0):
+        if st.button("Précédent", use_container_width=True, disabled=step == 0, key="step_prev"):
             st.session_state.investor_answers[current_question["key"]] = selected_answer
             st.session_state.question_step -= 1
             st.rerun()
 
     with c2:
-        if st.button("Recommencer", use_container_width=True):
+        if st.button("Recommencer", use_container_width=True, key="step_reset"):
             reset_analysis()
             st.rerun()
 
     with c3:
         if step < total_questions - 1:
-            if st.button("Suivant", use_container_width=True, type="primary"):
+            if st.button("Suivant", use_container_width=True, type="primary", key="step_next"):
                 st.session_state.investor_answers[current_question["key"]] = selected_answer
                 st.session_state.question_step += 1
                 st.rerun()
         else:
-            if st.button("Afficher mon profil", use_container_width=True, type="primary"):
+            if st.button("Afficher mon profil", use_container_width=True, type="primary", key="step_show_profil"):
                 st.session_state.investor_answers[current_question["key"]] = selected_answer
 
                 score = 0
@@ -1933,12 +1933,12 @@ if st.session_state.analysis_done:
     b1, b2 = st.columns(2)
 
     with b1:
-        if st.button("Calculer les recommandations financières", use_container_width=True, type="primary"):
+        if st.button("Calculer les recommandations financières", use_container_width=True, type="primary", key="calc_reco"):
             st.session_state.show_mcda = True
             st.rerun()
 
     with b2:
-        if st.button("Recommencer le questionnaire", use_container_width=True):
+        if st.button("Recommencer le questionnaire", use_container_width=True, key="reset_questionnaire"):
             reset_analysis()
             st.rerun()
 
@@ -2263,7 +2263,7 @@ if st.session_state.analysis_done and st.session_state.show_mcda:
         st.dataframe(table, use_container_width=True)
 
     with tab_help:
-        if st.button("Afficher / masquer l’aide de lecture", use_container_width=True):
+        if st.button("Afficher / masquer l'aide de lecture", use_container_width=True, key="toggle_aide"):
             st.session_state.show_indicator_help = not st.session_state.show_indicator_help
 
         if st.session_state.show_indicator_help:

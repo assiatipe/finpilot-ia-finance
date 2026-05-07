@@ -949,7 +949,7 @@ with right:
         key="confirm_reset_portfolio",
     )
 
-    if st.button("Réinitialiser mon portefeuille", use_container_width=True, type="primary"):
+    if st.button("Réinitialiser mon portefeuille", use_container_width=True, type="primary", key="reset_portfolio"):
         if not confirm_reset:
             st.error("Veuillez confirmer la réinitialisation.")
         else:

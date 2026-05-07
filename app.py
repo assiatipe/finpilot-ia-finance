@@ -392,7 +392,7 @@ def render_capital_setup(user_id):
             key="capital_confirmation",
         )
 
-        if st.button("Initialiser mon portefeuille", use_container_width=True, type="primary"):
+        if st.button("Initialiser mon portefeuille", use_container_width=True, type="primary", key="init_portfolio"):
             if not confirmation:
                 st.error("Veuillez confirmer le capital choisi avant de continuer.")
             else:
@@ -1912,10 +1912,10 @@ with left:
 
     b1, b2 = st.columns(2, gap="medium")
     with b1:
-        if st.button(next_button, use_container_width=True, type="primary"):
+        if st.button(next_button, use_container_width=True, type="primary", key="step_next_app"):
             st.switch_page(next_page)
     with b2:
-        if st.button("Voir mon portefeuille", use_container_width=True):
+        if st.button("Voir mon portefeuille", use_container_width=True, key="voir_portefeuille_app"):
             st.switch_page("pages/portefeuille.py")
 
     html(f"""
@@ -2057,13 +2057,13 @@ with right:
     </div>
     """)
 
-    if st.button("Analyser mon profil", use_container_width=True, type="primary"):
+    if st.button("Analyser mon profil", use_container_width=True, type="primary", key="analyser_profil_app"):
         st.switch_page("pages/analyse.py")
 
-    if st.button("Gérer mon portefeuille", use_container_width=True):
+    if st.button("Gérer mon portefeuille", use_container_width=True, key="gerer_portefeuille_app"):
         st.switch_page("pages/portefeuille.py")
 
-    if st.button("Voir l’historique", use_container_width=True):
+    if st.button("Voir l'historique", use_container_width=True, key="voir_historique_app"):
         st.switch_page("pages/historique.py")
 
     html("""
