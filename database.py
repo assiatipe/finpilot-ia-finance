@@ -30,10 +30,6 @@ def init_db():
     conn = get_db_connection()
     c = conn.cursor()
 
-    # Nouvelle logique :
-    # - plus de cash imposé à 10 000 $
-    # - le capital est choisi par l'utilisateur
-    # - tant que capital_configured = 0, l'app affiche l'écran de configuration
     c.execute("""CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL,
@@ -46,7 +42,6 @@ def init_db():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )""")
 
-    # Migration pour les anciennes bases déjà créées avec cash_balance DEFAULT 10000.0.
     _add_column_if_missing(c, "users", "initial_capital", "REAL DEFAULT NULL")
     _add_column_if_missing(c, "users", "capital_configured", "INTEGER DEFAULT 0")
 
@@ -92,6 +87,17 @@ def init_db():
         company_name TEXT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users(id),
         UNIQUE(user_id, ticker)
+    )""")
+
+    # ── TABLE FEEDBACKS ───────────────────────────────────────────────────────
+    c.execute("""CREATE TABLE IF NOT EXISTS feedbacks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        rating INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 5),
+        category TEXT NOT NULL DEFAULT 'Général',
+        message TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id)
     )""")
 
     conn.commit()
@@ -164,17 +170,6 @@ def get_user_initial_capital(user_id):
 
 
 def set_user_initial_capital(user_id, amount, reset_portfolio=True):
-    """
-    Définit le capital initial réel/simulé choisi par l'utilisateur.
-
-    reset_portfolio=True :
-    - supprime les positions
-    - supprime les ordres
-    - remet le cash au montant choisi
-
-    C'est la logique la plus propre pour une vraie app de simulation :
-    on ne garde pas d'anciens achats liés à un ancien capital fictif.
-    """
     amount = float(amount)
 
     if amount <= 0:
@@ -196,11 +191,6 @@ def set_user_initial_capital(user_id, amount, reset_portfolio=True):
 
 
 def reset_user_portfolio(user_id, new_capital=None):
-    """
-    Réinitialise le portefeuille.
-    Si new_capital est fourni, il devient le nouveau capital initial.
-    Sinon, on reprend le capital initial déjà enregistré.
-    """
     if new_capital is None:
         new_capital = get_user_initial_capital(user_id)
 
@@ -264,8 +254,6 @@ def upsert_portfolio_position(user_id, ticker, company_name, qty, avg_price):
         if new_qty <= 0:
             conn.execute("DELETE FROM portfolio WHERE user_id = ? AND ticker = ?", (user_id, ticker))
         else:
-            # Si achat, on recalcule le prix moyen pondéré.
-            # Si vente, le PRU reste celui de la position restante.
             new_avg = ((old_qty * old_avg) + (float(qty) * float(avg_price))) / new_qty if qty > 0 else old_avg
             conn.execute(
                 "UPDATE portfolio SET quantity = ?, avg_buy_price = ? WHERE user_id = ? AND ticker = ?",
@@ -366,3 +354,126 @@ def add_to_watchlist(user_id, ticker, company_name):
         conn.close()
     except Exception:
         pass
+
+
+# =============================================================================
+# FEEDBACKS
+# =============================================================================
+
+FEEDBACK_CATEGORIES = [
+    "Général",
+    "Interface",
+    "Analyse IA",
+    "Simulation",
+    "Portefeuille",
+    "Performance",
+    "Suggestion",
+]
+
+
+def save_feedback(user_id: int, rating: int, category: str, message: str) -> bool:
+    """
+    Enregistre un avis utilisateur.
+    Retourne True si l'insertion a réussi, False sinon.
+    """
+    if not (1 <= rating <= 5):
+        return False
+    if not message or not message.strip():
+        return False
+
+    try:
+        conn = get_db_connection()
+        conn.execute(
+            "INSERT INTO feedbacks (user_id, rating, category, message) VALUES (?, ?, ?, ?)",
+            (user_id, int(rating), category.strip(), message.strip())
+        )
+        conn.commit()
+        conn.close()
+        return True
+    except Exception:
+        return False
+
+
+def get_user_feedbacks(user_id: int) -> list:
+    """Retourne tous les avis d'un utilisateur, du plus récent au plus ancien."""
+    conn = get_db_connection()
+    rows = conn.execute(
+        "SELECT id, rating, category, message, created_at FROM feedbacks "
+        "WHERE user_id = ? ORDER BY created_at DESC",
+        (user_id,)
+    ).fetchall()
+    result = [row_to_dict(r) for r in rows]
+    conn.close()
+    return result
+
+
+def get_all_feedbacks() -> list:
+    """
+    Retourne tous les avis de tous les utilisateurs (usage admin).
+    Joint avec la table users pour afficher le nom.
+    """
+    conn = get_db_connection()
+    rows = conn.execute(
+        """
+        SELECT f.id, f.rating, f.category, f.message, f.created_at,
+               u.username, u.email
+        FROM feedbacks f
+        JOIN users u ON f.user_id = u.id
+        ORDER BY f.created_at DESC
+        """
+    ).fetchall()
+    result = [row_to_dict(r) for r in rows]
+    conn.close()
+    return result
+
+
+def get_feedback_stats() -> dict:
+    """
+    Retourne des statistiques agrégées sur les avis :
+    - note moyenne globale
+    - nombre total d'avis
+    - répartition par note (1 à 5)
+    - répartition par catégorie
+    """
+    conn = get_db_connection()
+
+    row = conn.execute(
+        "SELECT COUNT(*) as total, AVG(rating) as avg_rating FROM feedbacks"
+    ).fetchone()
+
+    total = int(row["total"] or 0)
+    avg_rating = round(float(row["avg_rating"] or 0), 2)
+
+    dist_rows = conn.execute(
+        "SELECT rating, COUNT(*) as cnt FROM feedbacks GROUP BY rating ORDER BY rating"
+    ).fetchall()
+    distribution = {str(r["rating"]): int(r["cnt"]) for r in dist_rows}
+
+    cat_rows = conn.execute(
+        "SELECT category, COUNT(*) as cnt FROM feedbacks GROUP BY category ORDER BY cnt DESC"
+    ).fetchall()
+    by_category = {r["category"]: int(r["cnt"]) for r in cat_rows}
+
+    conn.close()
+
+    return {
+        "total": total,
+        "avg_rating": avg_rating,
+        "distribution": distribution,
+        "by_category": by_category,
+    }
+
+
+def user_has_given_feedback_today(user_id: int) -> bool:
+    """
+    Vérifie si l'utilisateur a déjà soumis un avis aujourd'hui
+    (limite anti-spam : 1 avis par jour).
+    """
+    conn = get_db_connection()
+    row = conn.execute(
+        "SELECT COUNT(*) as cnt FROM feedbacks "
+        "WHERE user_id = ? AND DATE(created_at) = DATE('now')",
+        (user_id,)
+    ).fetchone()
+    conn.close()
+    return int(row["cnt"] or 0) > 0

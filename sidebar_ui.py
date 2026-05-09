@@ -473,6 +473,12 @@ def render_sidebar(active_page="dashboard", cash_balance=5100.0, logout_callback
             "text": "Gérez votre profil, vos préférences et vos réglages dans un espace simple et moderne.",
             "figure": "figure-profile",
         },
+        "feedback": {
+            "kicker": "Avis & Retours",
+            "title": "Votre expérience",
+            "text": "Partagez votre ressenti après simulation et consultez les retours de la communauté.",
+            "figure": "figure-profile",
+        },
     }
 
     current = sidebar_data.get(active_page, sidebar_data["dashboard"])
@@ -497,6 +503,7 @@ def render_sidebar(active_page="dashboard", cash_balance=5100.0, logout_callback
             ("◉  Analyses IA", "pages/analyse.py", "analyse"),
             ("◷  Historique", "pages/historique.py", "historique"),
             ("◎  Profil", "pages/profil.py", "profil"),
+            ("◈  Avis", "pages/feedback.py", "feedback"),
         ]
 
         for label, page, page_key in nav_pages:
