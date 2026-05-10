@@ -44,6 +44,7 @@ def init_db():
 
     _add_column_if_missing(c, "users", "initial_capital", "REAL DEFAULT NULL")
     _add_column_if_missing(c, "users", "capital_configured", "INTEGER DEFAULT 0")
+    _add_column_if_missing(c, "users", "is_admin", "INTEGER DEFAULT 0")
 
     c.execute("""CREATE TABLE IF NOT EXISTS portfolio (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -477,3 +478,140 @@ def user_has_given_feedback_today(user_id: int) -> bool:
     ).fetchone()
     conn.close()
     return int(row["cnt"] or 0) > 0
+
+
+# =============================================================================
+# ADMIN
+# =============================================================================
+
+def is_user_admin(user_id: int) -> bool:
+    """Retourne True si l'utilisateur est admin."""
+    conn = get_db_connection()
+    row = conn.execute("SELECT is_admin FROM users WHERE id = ?", (user_id,)).fetchone()
+    conn.close()
+    if not row:
+        return False
+    return int(row["is_admin"] or 0) == 1
+
+
+def set_user_admin(user_id: int, admin: bool = True):
+    """Accorde ou retire les droits admin à un utilisateur."""
+    conn = get_db_connection()
+    conn.execute("UPDATE users SET is_admin = ? WHERE id = ?", (1 if admin else 0, user_id))
+    conn.commit()
+    conn.close()
+
+
+def admin_get_all_users() -> list:
+    """
+    Retourne tous les utilisateurs avec leurs statistiques :
+    nombre d'ordres, nombre d'analyses, nombre d'avis, capital initial, cash actuel.
+    """
+    conn = get_db_connection()
+    rows = conn.execute("""
+        SELECT
+            u.id,
+            u.username,
+            u.email,
+            u.profile,
+            u.cash_balance,
+            u.initial_capital,
+            u.capital_configured,
+            u.is_admin,
+            u.created_at,
+            COUNT(DISTINCT o.id)  AS nb_orders,
+            COUNT(DISTINCT a.id)  AS nb_analyses,
+            COUNT(DISTINCT f.id)  AS nb_feedbacks
+        FROM users u
+        LEFT JOIN orders    o ON o.user_id = u.id
+        LEFT JOIN analyses  a ON a.user_id = u.id
+        LEFT JOIN feedbacks f ON f.user_id = u.id
+        GROUP BY u.id
+        ORDER BY u.created_at DESC
+    """).fetchall()
+    result = [row_to_dict(r) for r in rows]
+    conn.close()
+    return result
+
+
+def admin_get_user_orders(user_id: int) -> list:
+    """Retourne tous les ordres d'un utilisateur donné."""
+    conn = get_db_connection()
+    rows = conn.execute(
+        "SELECT ticker, order_type, quantity, price, total, cash_after, created_at "
+        "FROM orders WHERE user_id = ? ORDER BY created_at DESC",
+        (user_id,)
+    ).fetchall()
+    result = [row_to_dict(r) for r in rows]
+    conn.close()
+    return result
+
+
+def admin_get_user_analyses(user_id: int) -> list:
+    """Retourne toutes les analyses d'un utilisateur donné."""
+    conn = get_db_connection()
+    rows = conn.execute(
+        "SELECT profil, score, recommended_tickers, notes, created_at "
+        "FROM analyses WHERE user_id = ? ORDER BY created_at DESC",
+        (user_id,)
+    ).fetchall()
+    result = [row_to_dict(r) for r in rows]
+    conn.close()
+    return result
+
+
+def admin_delete_user(user_id: int):
+    """
+    Supprime un utilisateur et toutes ses données associées
+    (ordres, portfolio, analyses, feedbacks, watchlist).
+    """
+    conn = get_db_connection()
+    conn.execute("DELETE FROM orders    WHERE user_id = ?", (user_id,))
+    conn.execute("DELETE FROM portfolio WHERE user_id = ?", (user_id,))
+    conn.execute("DELETE FROM analyses  WHERE user_id = ?", (user_id,))
+    conn.execute("DELETE FROM feedbacks WHERE user_id = ?", (user_id,))
+    conn.execute("DELETE FROM watchlist WHERE user_id = ?", (user_id,))
+    conn.execute("DELETE FROM users     WHERE id = ?",      (user_id,))
+    conn.commit()
+    conn.close()
+
+
+def admin_delete_feedback(feedback_id: int):
+    """Supprime un avis spécifique."""
+    conn = get_db_connection()
+    conn.execute("DELETE FROM feedbacks WHERE id = ?", (feedback_id,))
+    conn.commit()
+    conn.close()
+
+
+def admin_get_global_stats() -> dict:
+    """
+    Statistiques globales de la plateforme pour le dashboard admin :
+    - nb utilisateurs total
+    - nb ordres total
+    - nb analyses total
+    - nb avis total
+    - volume total simulé ($)
+    - note moyenne des avis
+    """
+    conn = get_db_connection()
+
+    users_row = conn.execute("SELECT COUNT(*) as cnt FROM users").fetchone()
+    orders_row = conn.execute(
+        "SELECT COUNT(*) as cnt, COALESCE(SUM(total), 0) as volume FROM orders"
+    ).fetchone()
+    analyses_row = conn.execute("SELECT COUNT(*) as cnt FROM analyses").fetchone()
+    fb_row = conn.execute(
+        "SELECT COUNT(*) as cnt, COALESCE(AVG(rating), 0) as avg_r FROM feedbacks"
+    ).fetchone()
+
+    conn.close()
+
+    return {
+        "nb_users":     int(users_row["cnt"]    or 0),
+        "nb_orders":    int(orders_row["cnt"]   or 0),
+        "nb_analyses":  int(analyses_row["cnt"] or 0),
+        "nb_feedbacks": int(fb_row["cnt"]       or 0),
+        "volume_total": float(orders_row["volume"] or 0),
+        "avg_rating":   round(float(fb_row["avg_r"] or 0), 2),
+    }

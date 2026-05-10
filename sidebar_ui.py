@@ -1,4 +1,5 @@
 import streamlit as st
+from database import is_user_admin
 
 
 def money_dollar(x):
@@ -22,6 +23,8 @@ def render_sidebar(active_page="dashboard", cash_balance=5100.0, logout_callback
     - "analyse"
     - "historique"
     - "profil"
+    - "admin"
+    - "feedback"
     """
 
     css = """
@@ -516,6 +519,19 @@ def render_sidebar(active_page="dashboard", cash_balance=5100.0, logout_callback
             ):
                 if active_page != page_key:
                     st.switch_page(page)
+
+        # Lien Admin — visible uniquement pour les admins
+        _uid = st.session_state.get("user_id")
+        if _uid and is_user_admin(_uid):
+            is_current_admin = active_page == "admin"
+            if st.button(
+                "⚙  Administration",
+                key="nav_admin",
+                use_container_width=True,
+                type="primary" if is_current_admin else "secondary",
+            ):
+                if active_page != "admin":
+                    st.switch_page("pages/admin.py")
 
         visual_html = f"""
         <div class="sidebar-visual-card">
