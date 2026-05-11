@@ -214,7 +214,7 @@ st.markdown(
             border-radius: 26px;
             padding: 1.55rem;
             box-shadow: 0 18px 48px rgba(21,54,108,.085), inset 0 1px 0 rgba(255,255,255,.82);
-            margin-bottom: 1rem;
+            margin-bottom: 0.3rem;
             position: relative;
             overflow: hidden;
         }
@@ -1873,9 +1873,8 @@ if not st.session_state.analysis_done:
             options=labels,
             index=index,
             key=answer_key,
+            label_visibility="collapsed",
         )
-
-    st.markdown("<div style='height:1.2rem;'></div>", unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
 
