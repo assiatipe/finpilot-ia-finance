@@ -1196,6 +1196,19 @@ with right:
     total_alloc = cash_balance + actions_value if (cash_balance + actions_value) > 0 else 1
     cash_pct = round(cash_balance / total_alloc * 100)
 
+    # Pré-construire les lignes de légende hors f-string
+    legend_rows_html = ""
+    for r in position_rows[:4]:
+        pct = round(r["value"] / total_alloc * 100)
+        ticker = r["ticker"]
+        legend_rows_html += (
+            '<div class="db-legend-row">'
+            '<div class="db-legend-dot" style="background:#60A5FA"></div>'
+            f'<span style="color:#374151;font-size:.85rem;font-weight:600;">{ticker}</span>'
+            f'<span style="color:#9CA3AF;font-size:.82rem;margin-left:auto;">{pct}%</span>'
+            '</div>'
+        )
+
     # Répartition
     html(f"""
     <div class="db-card">
@@ -1213,7 +1226,7 @@ with right:
                     <span style="color:#374151;font-size:.85rem;font-weight:600;">Cash</span>
                     <span style="color:#9CA3AF;font-size:.82rem;margin-left:auto;">{cash_pct}%</span>
                 </div>
-                {''.join(f"""<div class="db-legend-row"><div class="db-legend-dot" style="background:#60A5FA"></div><span style="color:#374151;font-size:.85rem;font-weight:600;">{r['ticker']}</span><span style="color:#9CA3AF;font-size:.82rem;margin-left:auto;">{round(r['value']/total_alloc*100)}%</span></div>""" for r in position_rows[:4])}
+                {legend_rows_html}
             </div>
         </div>
     </div>
