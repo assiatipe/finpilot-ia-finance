@@ -1428,6 +1428,9 @@ if "show_mcda" not in st.session_state:
 if "show_indicator_help" not in st.session_state:
     st.session_state.show_indicator_help = False
 
+if "last_saved_analysis_signature" not in st.session_state:
+    st.session_state.last_saved_analysis_signature = None
+
 
 # ============================================================
 # FUNCTIONS
@@ -1697,6 +1700,7 @@ def reset_analysis():
     st.session_state.analysis_done = False
     st.session_state.show_mcda = False
     st.session_state.show_indicator_help = False
+    st.session_state.last_saved_analysis_signature = None
 
     for key in list(st.session_state.keys()):
         if key.startswith("answer_"):
@@ -1912,14 +1916,11 @@ if not st.session_state.analysis_done:
                 profile, color, description = classify_profile(score)
                 selected_sectors = st.session_state.investor_answers.get("secteurs", [])
 
-                save_analysis(
-                    user_id,
-                    profile,
-                    score,
-                    recommendations,
-                    "",
-                    f"Score: {score}/55 | Secteurs: {', '.join(selected_sectors) if selected_sectors else 'Aucune préférence'}",
-                )
+                # Important :
+                # On ne sauvegarde pas encore l'analyse ici, car le Top 5 n'est pas encore calculé.
+                # La sauvegarde complète se fait après le calcul MCDA pour éviter :
+                # - NameError: recommendations is not defined
+                # - "Aucune recommandation enregistrée" dans l'historique.
 
                 st.session_state.analysis_done = True
                 st.session_state.last_profile = profile
@@ -1989,6 +1990,35 @@ if st.session_state.analysis_done and st.session_state.show_mcda:
         except Exception as e:
             st.error(f"Erreur lors du calcul : {e}")
             st.stop()
+
+    # ========================================================
+    # SAUVEGARDE DE L'ANALYSE AVEC LES RECOMMANDATIONS
+    # ========================================================
+    # Le Top 5 est maintenant disponible. On peut donc enregistrer
+    # l'analyse complète dans l'historique.
+    recommendations_text = ", ".join([str(ticker) for ticker in top5.index.tolist()])
+    selected_sectors_text = ", ".join(selected_sectors) if selected_sectors else "Aucune préférence"
+    analysis_notes = (
+        f"Score: {score}/55 | "
+        f"Secteurs: {selected_sectors_text} | "
+        f"Top 5: {recommendations_text}"
+    )
+
+    current_signature = f"{user_id}|{profile}|{score}|{recommendations_text}|{selected_sectors_text}"
+
+    if st.session_state.last_saved_analysis_signature != current_signature:
+        try:
+            save_analysis(
+                user_id,
+                profile,
+                score,
+                recommendations_text,
+                "",
+                analysis_notes,
+            )
+            st.session_state.last_saved_analysis_signature = current_signature
+        except Exception as e:
+            st.warning(f"Analyse calculée, mais sauvegarde dans l'historique impossible : {e}")
 
     st.markdown(
         """
