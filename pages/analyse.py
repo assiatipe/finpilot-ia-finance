@@ -1778,9 +1778,24 @@ if not st.session_state.analysis_done:
         st.markdown(
             """
             <div class="fp-soft-card" style="background:linear-gradient(135deg,#EAF2FF,#F8FBFF);">
-                <div class="fp-card-title">Objectif</div>
-                <div class="fp-card-sub">
-                    Construire un profil investisseur vraiment exploitable et simple à comprendre.
+                <div style="display:flex;align-items:flex-start;gap:.85rem;">
+                    <div style="flex-shrink:0;width:42px;height:42px;border-radius:12px;background:#EEF4FF;border:1px solid #DBEAFE;display:flex;align-items:center;justify-content:center;">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="11" cy="11" r="9" stroke="#3B82F6" stroke-width="1.8"/>
+                            <circle cx="11" cy="11" r="4.5" stroke="#3B82F6" stroke-width="1.8"/>
+                            <circle cx="11" cy="11" r="1.5" fill="#3B82F6"/>
+                            <line x1="11" y1="2" x2="11" y2="4.5" stroke="#3B82F6" stroke-width="1.8" stroke-linecap="round"/>
+                            <line x1="11" y1="17.5" x2="11" y2="20" stroke="#3B82F6" stroke-width="1.8" stroke-linecap="round"/>
+                            <line x1="2" y1="11" x2="4.5" y2="11" stroke="#3B82F6" stroke-width="1.8" stroke-linecap="round"/>
+                            <line x1="17.5" y1="11" x2="20" y2="11" stroke="#3B82F6" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="fp-card-title" style="font-size:1.05rem;">Objectif</div>
+                        <div class="fp-card-sub" style="margin-top:.25rem;">
+                            Construire un profil investisseur vraiment exploitable et simple à comprendre.
+                        </div>
+                    </div>
                 </div>
             </div>
             """,
@@ -1804,15 +1819,35 @@ if not st.session_state.analysis_done:
         st.markdown(
             """
             <div class="fp-soft-card">
-                <div class="fp-card-title">Pourquoi cette question ?</div>
-                <div class="fp-card-sub">
-                    Elle permet à FinPilot d’adapter le niveau de risque, le type d’actifs et la logique de recommandation à votre situation réelle.
+                <div style="display:flex;align-items:flex-start;gap:.85rem;">
+                    <div style="flex-shrink:0;width:42px;height:42px;border-radius:12px;background:#EEF4FF;border:1px solid #DBEAFE;display:flex;align-items:center;justify-content:center;">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="11" cy="8" r="3.5" stroke="#3B82F6" stroke-width="1.8"/>
+                            <path d="M5 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" stroke="#3B82F6" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="fp-card-title" style="font-size:1.05rem;">Pourquoi cette question ?</div>
+                        <div class="fp-card-sub" style="margin-top:.25rem;">
+                            Elle permet à FinPilot d'adapter le niveau de risque, le type d'actifs et la logique de recommandation à votre situation réelle.
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="fp-soft-card" style="background:linear-gradient(135deg,#F7FBFF,#EDF6FF);">
-                <div class="fp-card-title">Résultat attendu</div>
-                <div class="fp-card-sub">
-                    À la fin, vous obtenez un profil clair, des secteurs choisis et des recommandations d’actions adaptées.
+                <div style="display:flex;align-items:flex-start;gap:.85rem;">
+                    <div style="flex-shrink:0;width:42px;height:42px;border-radius:12px;background:#EEF4FF;border:1px solid #DBEAFE;display:flex;align-items:center;justify-content:center;">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="3" width="16" height="16" rx="3" stroke="#3B82F6" stroke-width="1.8"/>
+                            <path d="M7 11.5L10 14.5L15 8.5" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="fp-card-title" style="font-size:1.05rem;">Résultat attendu</div>
+                        <div class="fp-card-sub" style="margin-top:.25rem;">
+                            À la fin, vous obtenez un profil clair, des secteurs choisis et des recommandations d'actions adaptées.
+                        </div>
+                    </div>
                 </div>
             </div>
             """,
