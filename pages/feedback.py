@@ -473,4 +473,3 @@ with right_col:
                 <div class="review-msg">{msg}</div>
             </div>
             """, unsafe_allow_html=True)
-            
