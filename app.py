@@ -43,7 +43,7 @@ if not st.session_state.get("logged_in"):
 
 
 # ============================================================
-# HELPERS
+# HTML HELPER
 # ============================================================
 
 def html(content: str):
@@ -76,488 +76,16 @@ def safe_username():
 
 
 # ============================================================
-# STYLE DASHBOARD PREMIUM V2
-# ============================================================
-
-DASHBOARD_CSS = """
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Bricolage+Grotesque:wght@500;600;700;800&display=swap');
-
-html, body, .stApp {
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
-    -webkit-font-smoothing: antialiased;
-}
-
-.stApp {
-    background: #F7F8FA !important;
-}
-
-.main .block-container {
-    max-width: 1460px !important;
-    padding: 0 1.8rem 2.5rem 1.8rem !important;
-}
-
-[data-testid="stAppViewContainer"] > .main,
-section.main > div,
-div.block-container {
-    padding-top: 0 !important;
-}
-
-/* ── HERO ─────────────────────────────────────────────────── */
-.db-hero {
-    position: relative;
-    overflow: hidden;
-    padding: 2.6rem 3rem 2.2rem 3rem;
-    margin: 0 0 1.4rem 0;
-    border-radius: 0 0 24px 24px;
-    background: #0A0F1E;
-    color: white;
-    min-height: 220px;
-}
-
-.db-hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(ellipse at 80% 50%, rgba(26,86,219,0.35) 0%, transparent 55%),
-        radial-gradient(ellipse at 20% 80%, rgba(99,102,241,0.15) 0%, transparent 45%);
-    pointer-events: none;
-}
-
-.db-hero-grid {
-    position: absolute;
-    inset: 0;
-    background-image:
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size: 44px 44px;
-    mask-image: linear-gradient(180deg, transparent 0%, black 30%, black 70%, transparent 100%);
-}
-
-.db-hero-content {
-    position: relative;
-    z-index: 3;
-}
-
-.db-hero-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #60A5FA;
-    margin-bottom: 0.6rem;
-}
-
-.db-hero-title {
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 2.4rem;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    line-height: 1.1;
-    margin-bottom: 0.7rem;
-    color: #FFFFFF;
-}
-
-.db-hero-sub {
-    color: rgba(255,255,255,0.65);
-    font-size: 0.97rem;
-    line-height: 1.65;
-    max-width: 600px;
-    font-weight: 400;
-    margin-bottom: 1.2rem;
-}
-
-.db-hero-badges {
-    display: flex;
-    gap: 0.7rem;
-    flex-wrap: wrap;
-}
-
-.db-hero-badge {
-    padding: 0.42rem 0.85rem;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: rgba(255,255,255,0.85);
-}
-
-/* Graphe décoratif hero */
-.db-hero-chart {
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 45%;
-    z-index: 2;
-    pointer-events: none;
-    opacity: 0.7;
-}
-
-.db-hero-chart svg {
-    width: 100%;
-    height: 100%;
-}
-
-/* ── KPI CARDS ───────────────────────────────────────────── */
-.db-kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 1.2rem;
-}
-
-.db-kpi {
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 16px;
-    padding: 1.35rem 1.4rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.db-kpi:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transform: translateY(-1px);
-}
-
-.db-kpi::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    border-radius: 16px 16px 0 0;
-}
-
-.db-kpi.accent-blue::before  { background: #1A56DB; }
-.db-kpi.accent-green::before { background: #059669; }
-.db-kpi.accent-red::before   { background: #DC2626; }
-.db-kpi.accent-indigo::before{ background: #4F46E5; }
-
-.db-kpi-label {
-    font-size: 0.71rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #9CA3AF;
-    margin-bottom: 0.65rem;
-}
-
-.db-kpi-value {
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 1.85rem;
-    font-weight: 800;
-    color: #0A0F1E;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    margin-bottom: 0.35rem;
-}
-
-.db-kpi-value.positive { color: #059669; }
-.db-kpi-value.negative { color: #DC2626; }
-
-.db-kpi-sub {
-    font-size: 0.8rem;
-    color: #9CA3AF;
-    font-weight: 400;
-}
-
-/* ── SECTION CARDS ────────────────────────────────────────── */
-.db-card {
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 16px;
-    padding: 1.4rem 1.5rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    margin-bottom: 1rem;
-    transition: box-shadow 0.2s ease;
-}
-
-.db-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.07);
-}
-
-.db-card-title {
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #0A0F1E;
-    margin-bottom: 0.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.db-card-title::before {
-    content: "";
-    display: inline-block;
-    width: 3px;
-    height: 14px;
-    background: #1A56DB;
-    border-radius: 99px;
-    flex-shrink: 0;
-}
-
-.db-card-sub {
-    color: #6B7280;
-    font-size: 0.85rem;
-    margin-bottom: 1rem;
-    line-height: 1.55;
-}
-
-/* ── RECO BLOCK ──────────────────────────────────────────── */
-.db-reco {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 1.2rem;
-    align-items: flex-start;
-}
-
-.db-reco-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
-    background: #EEF4FF;
-    border: 1px solid #DBEAFE;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.db-reco-icon::after {
-    content: "AI";
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 800;
-    color: #1A56DB;
-}
-
-.db-reco-kicker {
-    font-size: 0.71rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.10em;
-    color: #1A56DB;
-    margin-bottom: 0.3rem;
-}
-
-.db-reco-title {
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 1.35rem;
-    font-weight: 800;
-    color: #0A0F1E;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-    margin-bottom: 0.4rem;
-}
-
-.db-reco-text {
-    color: #6B7280;
-    font-size: 0.88rem;
-    line-height: 1.6;
-}
-
-/* ── STATUS GRID ─────────────────────────────────────────── */
-.db-status-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.85rem;
-    margin-top: 0.2rem;
-}
-
-.db-status-box {
-    background: #F9FAFB;
-    border: 1px solid #F3F4F6;
-    border-radius: 12px;
-    padding: 1rem 1.1rem;
-}
-
-.db-status-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #9CA3AF;
-    margin-bottom: 0.4rem;
-}
-
-.db-status-value {
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #1A56DB;
-    margin-bottom: 0.2rem;
-}
-
-.db-status-text {
-    font-size: 0.78rem;
-    color: #9CA3AF;
-    margin-bottom: 0.6rem;
-}
-
-.db-progress {
-    height: 4px;
-    background: #E5E7EB;
-    border-radius: 99px;
-    overflow: hidden;
-}
-
-.db-progress-fill {
-    height: 100%;
-    border-radius: 99px;
-    background: #1A56DB;
-    transition: width 0.8s ease;
-}
-
-/* ── SUMMARY TABLE ───────────────────────────────────────── */
-.db-summary-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid #F3F4F6;
-    font-size: 0.88rem;
-}
-
-.db-summary-row:last-child { border-bottom: none; }
-
-.db-summary-label { color: #6B7280; }
-.db-summary-value {
-    font-weight: 700;
-    color: #0A0F1E;
-    font-family: 'Bricolage Grotesque', sans-serif;
-}
-
-/* ── DONUT ───────────────────────────────────────────────── */
-.db-donut-wrap {
-    display: grid;
-    grid-template-columns: 160px 1fr;
-    align-items: center;
-    gap: 1.2rem;
-    margin-top: 0.5rem;
-}
-
-.db-donut {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: conic-gradient(#1A56DB 0deg 360deg);
-    position: relative;
-    flex-shrink: 0;
-}
-
-.db-donut::before {
-    content: "";
-    position: absolute;
-    inset: 36px;
-    border-radius: 50%;
-    background: white;
-    box-shadow: inset 0 0 0 1px #F3F4F6;
-}
-
-.db-donut-center {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-weight: 800;
-    color: #0A0F1E;
-    font-size: 1.25rem;
-    line-height: 1.1;
-}
-
-.db-donut-center span {
-    font-size: 0.72rem;
-    color: #9CA3AF;
-    font-weight: 500;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.db-legend-row {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 0.5rem;
-    font-size: 0.85rem;
-}
-
-.db-legend-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-/* ── QUICK TEXT ──────────────────────────────────────────── */
-.db-quick-text {
-    background: #F9FAFB;
-    border: 1px solid #F3F4F6;
-    border-radius: 10px;
-    padding: 0.85rem 1rem;
-    color: #374151;
-    font-size: 0.88rem;
-    line-height: 1.6;
-    margin-top: 0.5rem;
-}
-
-/* ── RECO ITEM ───────────────────────────────────────────── */
-.db-reco-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.7rem 0.85rem;
-    background: #F9FAFB;
-    border: 1px solid #F3F4F6;
-    border-radius: 10px;
-    margin-bottom: 0.5rem;
-    transition: background 0.15s;
-}
-
-.db-reco-item:hover { background: #EEF4FF; }
-
-.db-reco-ticker {
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-weight: 700;
-    color: #0A0F1E;
-    font-size: 0.92rem;
-}
-
-.db-reco-name {
-    color: #6B7280;
-    font-size: 0.8rem;
-    margin-top: 0.1rem;
-}
-
-.db-reco-score {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: #1A56DB;
-    background: #EEF4FF;
-    padding: 0.25rem 0.55rem;
-    border-radius: 6px;
-    border: 1px solid #DBEAFE;
-}
-</style>
-"""
-
-
-# ============================================================
 # PAGE CAPITAL INITIAL
 # ============================================================
 
 def render_capital_setup(user_id):
     if "capital_form_value" not in st.session_state:
         st.session_state.capital_form_value = 5000.0
+
     if "capital_quick_choice" not in st.session_state:
         st.session_state.capital_quick_choice = "5 000 $"
+
     if "capital_last_choice" not in st.session_state:
         st.session_state.capital_last_choice = st.session_state.capital_quick_choice
 
@@ -573,116 +101,192 @@ def render_capital_setup(user_id):
     html("""
     <style>
     [data-testid="stSidebar"] { display:none !important; }
-    .block-container { max-width:1200px !important; padding-top:3rem !important; }
-
-    .cap-hero {
-        background: #0A0F1E;
-        border-radius: 20px;
-        padding: 2.5rem 2.8rem;
+    .block-container {
+        max-width: 1450px !important;
+        padding-top: 2.4rem !important;
+    }
+    .capital-hero-card {
+        background:
+            radial-gradient(circle at 92% 18%, rgba(255,255,255,0.16), transparent 30%),
+            linear-gradient(135deg, #061633 0%, #0B2F78 48%, #2F7CFF 100%);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 30px;
+        padding: 2.4rem 2.5rem;
         color: white;
+        min-height: 300px;
+        box-shadow: 0 24px 65px rgba(14,56,150,0.20);
         position: relative;
         overflow: hidden;
-        margin-bottom: 1.5rem;
     }
-    .cap-hero::before {
-        content:"";
-        position:absolute;
-        inset:0;
-        background: radial-gradient(ellipse at 85% 50%, rgba(26,86,219,0.4), transparent 55%);
+    .capital-hero-label {
+        color:#62E6FF;
+        text-transform:uppercase;
+        letter-spacing:.10em;
+        font-weight:900;
+        font-size:.92rem;
+        margin-bottom:.85rem;
     }
-    .cap-hero-label {
-        font-size:.72rem;font-weight:700;letter-spacing:.14em;
-        text-transform:uppercase;color:#60A5FA;margin-bottom:.6rem;
-        position:relative;z-index:2;
+    .capital-hero-title {
+        font-size:3.2rem;
+        line-height:1.05;
+        font-weight:900;
+        letter-spacing:-.055em;
+        margin-bottom:1rem;
     }
-    .cap-hero-title {
-        font-family:'Bricolage Grotesque',sans-serif;
-        font-size:2.6rem;font-weight:800;letter-spacing:-.04em;
-        line-height:1.1;margin-bottom:.7rem;
-        position:relative;z-index:2;
+    .capital-hero-text {
+        max-width:850px;
+        color:rgba(255,255,255,.90);
+        font-size:1.08rem;
+        line-height:1.7;
     }
-    .cap-hero-text {
-        color:rgba(255,255,255,.70);font-size:.97rem;line-height:1.65;
-        max-width:580px;position:relative;z-index:2;
+    .capital-chip-row {
+        display:flex;
+        gap:.7rem;
+        flex-wrap:wrap;
+        margin-top:1.3rem;
     }
-    .cap-panel {
-        background:#FFFFFF;border:1px solid #E5E7EB;
-        border-radius:16px;padding:1.8rem;
-        box-shadow:0 1px 3px rgba(0,0,0,.06);
+    .capital-chip {
+        padding:.55rem .95rem;
+        border-radius:999px;
+        color:white;
+        background:rgba(255,255,255,.14);
+        border:1px solid rgba(255,255,255,.17);
+        font-weight:800;
     }
-    .cap-panel-label {
-        font-size:.72rem;font-weight:700;letter-spacing:.10em;
-        text-transform:uppercase;color:#1A56DB;margin-bottom:.4rem;
+    .capital-side-panel,
+    .capital-feature-card,
+    .capital-form-card,
+    .capital-preview-box {
+        background:rgba(255,255,255,.96);
+        border:1px solid #DDE8F7;
+        border-radius:26px;
+        box-shadow:0 16px 44px rgba(21,54,108,.09);
     }
-    .cap-panel-amount {
-        font-family:'Bricolage Grotesque',sans-serif;
-        font-size:2.5rem;font-weight:800;color:#0A0F1E;
-        letter-spacing:-.04em;margin:.3rem 0;
+    .capital-side-panel {
+        padding:1.8rem;
+        min-height:300px;
     }
-    .cap-mini-grid {
-        display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:1rem;
+    .capital-side-label,
+    .capital-form-label,
+    .capital-preview-label {
+        color:#2F7CFF;
+        text-transform:uppercase;
+        letter-spacing:.08em;
+        font-weight:900;
+        font-size:.84rem;
     }
-    .cap-mini-card {
-        background:#F9FAFB;border:1px solid #F3F4F6;
-        border-radius:10px;padding:.8rem;
+    .capital-side-amount,
+    .capital-preview-value {
+        color:#10233F;
+        font-size:2.35rem;
+        font-weight:900;
+        margin:.45rem 0;
     }
-    .cap-mini-title {
-        font-size:.72rem;font-weight:700;text-transform:uppercase;
-        letter-spacing:.06em;color:#9CA3AF;margin-bottom:.2rem;
+    .capital-side-subtitle,
+    .capital-form-text,
+    .capital-preview-text,
+    .capital-feature-text {
+        color:#64748B;
+        line-height:1.6;
     }
-    .cap-mini-value { color:#0A0F1E;font-weight:700;font-size:.88rem; }
-    .cap-feature-card {
-        background:#FFFFFF;border:1px solid #E5E7EB;
-        border-top:3px solid #1A56DB;border-radius:14px;
-        padding:1.3rem;box-shadow:0 1px 3px rgba(0,0,0,.05);
+    .capital-side-mini-grid {
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:.8rem;
+        margin-top:1rem;
     }
-    .cap-feature-num {
-        width:36px;height:36px;border-radius:10px;
-        background:#EEF4FF;color:#1A56DB;
-        font-weight:800;font-size:.88rem;
-        display:flex;align-items:center;justify-content:center;
-        margin-bottom:.75rem;
+    .capital-side-mini-card {
+        background:#F6FAFF;
+        border:1px solid #E0EAF8;
+        border-radius:16px;
+        padding:.9rem;
     }
-    .cap-feature-title { color:#0A0F1E;font-weight:700;font-size:1rem;margin-bottom:.3rem; }
-    .cap-feature-text  { color:#6B7280;font-size:.85rem;line-height:1.55; }
-    .cap-form-card {
-        background:#FFFFFF;border:1px solid #E5E7EB;
-        border-radius:16px;padding:1.6rem 1.8rem;
-        box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:1rem;
+    .capital-side-mini-title {
+        color:#7890AD;
+        font-size:.78rem;
+        font-weight:900;
+        text-transform:uppercase;
     }
-    .cap-form-title {
-        font-family:'Bricolage Grotesque',sans-serif;
-        font-size:1.6rem;font-weight:800;color:#0A0F1E;
-        letter-spacing:-.03em;margin:.3rem 0 .5rem;
+    .capital-side-mini-value {
+        color:#10233F;
+        font-weight:900;
+        margin-top:.25rem;
     }
-    .cap-preview-box {
-        background:#EEF4FF;border:1px solid #DBEAFE;
-        border-radius:12px;padding:1.2rem;
+    .capital-feature-card {
+        padding:1.3rem;
+        height:100%;
+        border-top:5px solid #2F7CFF;
     }
-    .cap-preview-label {
-        font-size:.72rem;font-weight:700;letter-spacing:.10em;
-        text-transform:uppercase;color:#1A56DB;margin-bottom:.4rem;
+    .capital-feature-number {
+        width:42px;
+        height:42px;
+        border-radius:50%;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        background:linear-gradient(135deg,#2F7CFF,#31E6A8);
+        color:white;
+        font-weight:900;
+        margin-bottom:.85rem;
     }
-    .cap-preview-value {
-        font-family:'Bricolage Grotesque',sans-serif;
-        font-size:1.8rem;font-weight:800;color:#0A0F1E;letter-spacing:-.03em;
+    .capital-feature-title,
+    .capital-form-title {
+        color:#10233F;
+        font-weight:900;
+        letter-spacing:-.035em;
     }
-    .cap-note {
-        color:#9CA3AF;font-size:.8rem;line-height:1.55;margin-top:1rem;
+    .capital-feature-title { font-size:1.25rem; }
+    .capital-form-card {
+        padding:1.55rem 1.65rem;
+        margin-bottom:1rem;
+    }
+    .capital-form-title { font-size:1.8rem; margin:.35rem 0; }
+    .capital-preview-box {
+        padding:1.2rem;
+        min-height:128px;
+        background:linear-gradient(135deg,rgba(47,124,255,.10),rgba(122,60,255,.10));
+    }
+    .capital-note {
+        background:linear-gradient(135deg,rgba(47,124,255,.10),rgba(49,230,168,.10));
+        border:1px solid #D9E8F7;
+        border-radius:18px;
+        padding:1rem;
+        color:#47607E;
+        margin-top:.85rem;
+    }
+    div[data-testid="stRadio"] {
+        background:rgba(255,255,255,.75);
+        border:1px solid #DCE6F4;
+        padding:.8rem 1rem;
+        border-radius:18px;
+    }
+    div[data-testid="stButton"] button[kind="primary"] {
+        min-height:58px;
+        border-radius:18px;
+        border:none;
+        font-weight:900;
+        background:linear-gradient(90deg,#2F7CFF,#6C63FF) !important;
+        box-shadow:0 12px 26px rgba(47,124,255,.24);
     }
     </style>
     """)
 
-    hero_left, hero_right = st.columns([1.5, 1], gap="large")
+    hero_left, hero_right = st.columns([1.45, 0.95], gap="large")
 
     with hero_left:
         html("""
-        <div class="cap-hero">
-            <div class="cap-hero-label">✦ Configuration initiale</div>
-            <div class="cap-hero-title">Activez votre espace<br>d'investissement</div>
-            <div class="cap-hero-text">
+        <div class="capital-hero-card">
+            <div class="capital-hero-label">Configuration initiale</div>
+            <div class="capital-hero-title">Activez votre espace d’investissement</div>
+            <div class="capital-hero-text">
                 Choisissez le capital de simulation avec lequel vous souhaitez commencer.
-                Ce montant devient votre cash initial pour vos achats et votre portefeuille.
+                Ce montant devient votre cash initial pour vos achats, vos ventes
+                et le suivi de votre portefeuille.
+            </div>
+            <div class="capital-chip-row">
+                <div class="capital-chip">Aucun capital imposé</div>
+                <div class="capital-chip">Configuration de départ</div>
+                <div class="capital-chip">Portefeuille propre</div>
             </div>
         </div>
         """)
@@ -690,26 +294,26 @@ def render_capital_setup(user_id):
     with hero_right:
         current_preview = float(st.session_state.capital_form_value)
         html(f"""
-        <div class="cap-panel">
-            <div class="cap-panel-label">Aperçu du départ</div>
-            <div class="cap-panel-amount">{money_dollar(current_preview)}</div>
-            <div style="color:#6B7280;font-size:.85rem;">Cash initial disponible</div>
-            <div class="cap-mini-grid">
-                <div class="cap-mini-card">
-                    <div class="cap-mini-title">Mode</div>
-                    <div class="cap-mini-value">Simulation réaliste</div>
+        <div class="capital-side-panel">
+            <div class="capital-side-label">Aperçu du départ</div>
+            <div class="capital-side-amount">{money_dollar(current_preview)}</div>
+            <div class="capital-side-subtitle">Cash initial disponible</div>
+            <div class="capital-side-mini-grid">
+                <div class="capital-side-mini-card">
+                    <div class="capital-side-mini-title">Mode</div>
+                    <div class="capital-side-mini-value">Simulation réaliste</div>
                 </div>
-                <div class="cap-mini-card">
-                    <div class="cap-mini-title">Départ</div>
-                    <div class="cap-mini-value">Sans positions</div>
+                <div class="capital-side-mini-card">
+                    <div class="capital-side-mini-title">Départ</div>
+                    <div class="capital-side-mini-value">Sans positions</div>
                 </div>
-                <div class="cap-mini-card">
-                    <div class="cap-mini-title">Objectif</div>
-                    <div class="cap-mini-value">Construire un portefeuille</div>
+                <div class="capital-side-mini-card">
+                    <div class="capital-side-mini-title">Objectif</div>
+                    <div class="capital-side-mini-value">Construire votre portefeuille</div>
                 </div>
-                <div class="cap-mini-card">
-                    <div class="cap-mini-title">Règle</div>
-                    <div class="cap-mini-value">1 client = 1 capital</div>
+                <div class="capital-side-mini-card">
+                    <div class="capital-side-mini-title">Règle</div>
+                    <div class="capital-side-mini-value">1 client = 1 capital</div>
                 </div>
             </div>
         </div>
@@ -723,34 +327,42 @@ def render_capital_setup(user_id):
         ("02", "Cash initial", "Le montant choisi devient immédiatement le cash disponible pour vos futures opérations."),
         ("03", "Réinitialisation propre", "Les anciennes positions et les anciens ordres sont supprimés pour repartir correctement."),
     ]
+
     for col, (num, title, text) in zip([c1, c2, c3], cards):
         with col:
             html(f"""
-            <div class="cap-feature-card">
-                <div class="cap-feature-num">{num}</div>
-                <div class="cap-feature-title">{title}</div>
-                <div class="cap-feature-text">{text}</div>
+            <div class="capital-feature-card">
+                <div class="capital-feature-number">{num}</div>
+                <div class="capital-feature-title">{title}</div>
+                <div class="capital-feature-text">{text}</div>
             </div>
             """)
 
-    st.markdown("<div style='height:1.2rem;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
 
-    _, center, _ = st.columns([0.15, 1, 0.15])
+    outer_left, outer_center, outer_right = st.columns([0.18, 1, 0.18])
 
-    with center:
+    with outer_center:
         html("""
-        <div class="cap-form-card">
-            <div style="font-size:.72rem;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:#1A56DB;">Étape finale</div>
-            <div class="cap-form-title">Choisissez votre capital de départ</div>
-            <div style="color:#6B7280;font-size:.88rem;line-height:1.55;">
+        <div class="capital-form-card">
+            <div class="capital-form-label">Étape finale</div>
+            <div class="capital-form-title">Choisissez votre capital de départ</div>
+            <div class="capital-form-text">
                 Sélectionnez un montant rapide ou saisissez une valeur personnalisée.
+                Cette configuration sera utilisée pour initialiser votre portefeuille.
             </div>
         </div>
         """)
 
         options = ["1 000 $", "5 000 $", "10 000 $", "25 000 $", "50 000 $", "100 000 $", "Personnalisé"]
-        choice = st.radio("Montants rapides", options, horizontal=True,
-                          key="capital_quick_choice", label_visibility="collapsed")
+
+        choice = st.radio(
+            "Montants rapides",
+            options,
+            horizontal=True,
+            key="capital_quick_choice",
+            label_visibility="collapsed",
+        )
 
         if choice != st.session_state.capital_last_choice:
             if choice != "Personnalisé":
@@ -758,27 +370,34 @@ def render_capital_setup(user_id):
             st.session_state.capital_last_choice = choice
 
         box1, box2 = st.columns([1.1, 0.9], gap="large")
+
         with box1:
-            st.number_input("Capital initial ($)", min_value=100.0, max_value=10000000.0,
-                            step=100.0, key="capital_form_value",
-                            help="Montant utilisé comme cash de départ.")
+            st.number_input(
+                "Capital initial ($)",
+                min_value=100.0,
+                max_value=10000000.0,
+                step=100.0,
+                key="capital_form_value",
+                help="Montant utilisé comme cash de départ.",
+            )
+
         with box2:
             html(f"""
-            <div class="cap-preview-box">
-                <div class="cap-preview-label">Aperçu immédiat</div>
-                <div class="cap-preview-value">{money_dollar(float(st.session_state.capital_form_value))}</div>
-                <div style="color:#1A56DB;font-size:.82rem;margin-top:.35rem;">
-                    Ce montant sera votre cash de départ.
+            <div class="capital-preview-box">
+                <div class="capital-preview-label">Aperçu immédiat</div>
+                <div class="capital-preview-value">{money_dollar(float(st.session_state.capital_form_value))}</div>
+                <div class="capital-preview-text">
+                    Ce montant sera visible comme cash disponible après validation.
                 </div>
             </div>
             """)
 
         confirmation = st.checkbox(
             "Je confirme que ce montant sera utilisé comme capital initial de mon portefeuille.",
-            key="capital_confirmation")
+            key="capital_confirmation",
+        )
 
-        if st.button("Initialiser mon portefeuille", use_container_width=True,
-                     type="primary", key="init_portfolio"):
+        if st.button("Initialiser mon portefeuille", use_container_width=True, type="primary", key="init_portfolio"):
             if not confirmation:
                 st.error("Veuillez confirmer le capital choisi avant de continuer.")
             else:
@@ -791,7 +410,7 @@ def render_capital_setup(user_id):
                     st.error(f"Impossible d'enregistrer le capital : {e}")
 
         html("""
-        <div class="cap-note">
+        <div class="capital-note">
             Cette action initialise votre portefeuille et supprime les anciennes données
             de démonstration pour repartir sur une base propre.
         </div>
@@ -799,44 +418,1137 @@ def render_capital_setup(user_id):
 
 
 # ============================================================
-# DONNÉES PORTFOLIO
+# STYLE TABLEAU DE BORD PREMIUM
+# ============================================================
+
+def inject_dashboard_style():
+    html("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+    :root {
+        --navy:#061633;
+        --navy2:#092552;
+        --blue:#2F7CFF;
+        --purple:#7A3CFF;
+        --cyan:#25D9F2;
+        --green:#31D79B;
+        --orange:#FF9B16;
+        --text:#10233F;
+        --muted:#64748B;
+        --line:#DDE8F7;
+    }
+
+    html, body, .stApp {
+        font-family:'Inter', sans-serif !important;
+    }
+
+    .stApp {
+        background:
+            radial-gradient(circle at 6% 2%, rgba(47,124,255,.11), transparent 28%),
+            radial-gradient(circle at 98% 4%, rgba(48,225,176,.14), transparent 30%),
+            linear-gradient(135deg,#F8FBFF 0%,#EEF4FF 48%,#F8FFFD 100%) !important;
+    }
+
+    #MainMenu, footer, header, [data-testid="stSidebarNav"] {
+        visibility:hidden !important;
+        display:none !important;
+    }
+
+    [data-testid="stSidebar"] {
+        background:linear-gradient(180deg,#061633 0%,#092552 48%,#061833 100%) !important;
+        box-shadow:16px 0 60px rgba(6,22,51,.18);
+    }
+
+    [data-testid="stSidebar"] > div:first-child {
+        padding-top:2rem !important;
+    }
+
+    .main .block-container {
+        max-width:1460px !important;
+        padding:0rem 1.45rem 2rem 1.45rem !important;
+    }
+
+    .sidebar-brand-wrap {
+        display:flex;
+        align-items:center;
+        gap:.9rem;
+        margin:.6rem 0 1.9rem 0;
+    }
+
+    .fp-logo-symbol {
+        width:48px;
+        height:48px;
+        border-radius:15px;
+        background:linear-gradient(135deg,#2F7CFF,#27E0B3);
+        position:relative;
+        box-shadow:0 12px 28px rgba(47,124,255,.30);
+    }
+
+    .fp-logo-symbol::before {
+        content:"";
+        position:absolute;
+        width:13px;
+        height:36px;
+        left:17.5px;
+        top:6px;
+        border-radius:999px;
+        background:rgba(255,255,255,.25);
+    }
+
+    .fp-logo-symbol::after {
+        content:"";
+        position:absolute;
+        width:36px;
+        height:13px;
+        left:6px;
+        top:17.5px;
+        border-radius:999px;
+        background:rgba(255,255,255,.25);
+    }
+
+    .sidebar-logo-name {
+        color:white;
+        font-size:1.7rem;
+        font-weight:900;
+        letter-spacing:-.04em;
+        line-height:1;
+    }
+
+    .sidebar-logo-sub {
+        color:rgba(255,255,255,.78);
+        font-size:.92rem;
+        margin-top:.25rem;
+    }
+
+    div[data-testid="stSidebar"] .stButton > button {
+        height:58px !important;
+        border-radius:14px !important;
+        font-weight:800 !important;
+        font-size:1rem !important;
+        border:1px solid rgba(255,255,255,.08) !important;
+        background:rgba(255,255,255,.08) !important;
+        color:white !important;
+        justify-content:flex-start !important;
+        padding-left:1rem !important;
+        box-shadow:none !important;
+    }
+
+    div[data-testid="stSidebar"] .stButton > button[kind="primary"] {
+        background:linear-gradient(90deg,#2F7CFF,#7A3CFF) !important;
+        color:white !important;
+        box-shadow:0 16px 34px rgba(47,124,255,.28) !important;
+    }
+
+    .premium-box {
+        margin-top:2rem;
+        padding:1.25rem 1.35rem;
+        border-radius:18px;
+        border:1px solid rgba(87,160,255,.32);
+        background:rgba(255,255,255,.045);
+        color:white;
+    }
+
+    .premium-title {
+        display:flex;
+        justify-content:space-between;
+        font-size:1.05rem;
+        font-weight:900;
+        margin-bottom:.7rem;
+    }
+
+    .premium-text {
+        color:rgba(255,255,255,.78);
+        line-height:1.55;
+        font-size:.92rem;
+    }
+
+    .premium-cash {
+        margin-top:1.1rem;
+        color:#6FFFE0;
+        font-weight:900;
+    }
+
+
+    [data-testid="stAppViewContainer"] > .main {
+        padding-top:0 !important;
+    }
+
+    section.main > div {
+        padding-top:0 !important;
+    }
+
+    div.block-container {
+        padding-top:0 !important;
+    }
+
+    .element-container:has(.hero-premium) {
+        margin-top:0 !important;
+    }
+
+
+    .hero-premium {
+        position:relative;
+        overflow:hidden;
+        min-height:245px;
+        width:100%;
+        border-radius:0 0 28px 28px;
+        padding:2.7rem 3.3rem 2.15rem 3.3rem;
+        margin:0 0 1.15rem 0;
+        background:
+            radial-gradient(circle at 95% 28%, rgba(122,60,255,.72), transparent 22%),
+            radial-gradient(circle at 87% 45%, rgba(47,124,255,.50), transparent 34%),
+            linear-gradient(135deg,#05122D 0%,#09286C 43%,#176BFF 100%);
+        color:white;
+        box-shadow:0 26px 75px rgba(14,56,150,.20);
+        border:1px solid rgba(255,255,255,.12);
+    }
+
+    .hero-premium::after {
+        content:"";
+        position:absolute;
+        width:430px;
+        height:430px;
+        border:7px solid rgba(47,124,255,.20);
+        border-radius:50%;
+        right:-92px;
+        top:-172px;
+        animation:heroPulse 6s ease-in-out infinite;
+    }
+
+    .hero-premium::before {
+        content:"";
+        position:absolute;
+        width:92px;
+        height:92px;
+        background:linear-gradient(135deg,#2F7CFF,#7A3CFF);
+        border-radius:50%;
+        right:115px;
+        top:78px;
+        opacity:.88;
+        box-shadow:0 0 48px rgba(101,240,255,.28);
+        animation:heroOrb 5.5s ease-in-out infinite;
+    }
+
+    @keyframes heroPulse {
+        0%,100% { transform:scale(1); opacity:.55; }
+        50% { transform:scale(1.08); opacity:.85; }
+    }
+
+    @keyframes heroOrb {
+        0%,100% { transform:translateY(0); }
+        50% { transform:translateY(-10px); }
+    }
+
+    .hero-premium h1 {
+        position:relative;
+        z-index:4;
+        font-size:2.15rem;
+        letter-spacing:-.045em;
+        margin:0 0 .75rem 0;
+        font-weight:900;
+    }
+
+    .hero-premium p {
+        position:relative;
+        z-index:4;
+        max-width:670px;
+        font-size:1.02rem;
+        line-height:1.55;
+        margin:0;
+        color:rgba(255,255,255,.93);
+        font-weight:650;
+    }
+
+    .hero-badges {
+        position:relative;
+        z-index:4;
+        display:flex;
+        gap:1rem;
+        flex-wrap:wrap;
+        margin-top:1.25rem;
+    }
+
+    .hero-badge {
+        padding:.58rem 1.08rem;
+        background:rgba(255,255,255,.13);
+        border:1px solid rgba(255,255,255,.16);
+        border-radius:999px;
+        font-weight:900;
+        color:white;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+    }
+
+    .hero-schema {
+        position:absolute;
+        right:0;
+        top:0;
+        bottom:0;
+        width:54%;
+        z-index:2;
+        pointer-events:none;
+        overflow:hidden;
+        opacity:.98;
+    }
+
+    .schema-grid {
+        position:absolute;
+        inset:0;
+        background:
+            linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.038) 1px, transparent 1px);
+        background-size:42px 42px;
+        mask-image:linear-gradient(90deg, transparent 0%, black 20%, black 100%);
+    }
+
+    .schema-bars {
+        position:absolute;
+        right:155px;
+        bottom:34px;
+        display:flex;
+        align-items:flex-end;
+        gap:10px;
+        height:150px;
+        opacity:.55;
+    }
+
+    .schema-bar {
+        width:13px;
+        border-radius:10px 10px 0 0;
+        background:linear-gradient(180deg, rgba(85,223,255,.95), rgba(47,124,255,.10));
+        box-shadow:0 0 18px rgba(85,223,255,.16);
+        animation:barMove 2.8s ease-in-out infinite alternate;
+    }
+
+    .schema-bar:nth-child(1){height:34px;animation-delay:.05s}
+    .schema-bar:nth-child(2){height:52px;animation-delay:.15s}
+    .schema-bar:nth-child(3){height:69px;animation-delay:.25s}
+    .schema-bar:nth-child(4){height:92px;animation-delay:.35s}
+    .schema-bar:nth-child(5){height:116px;animation-delay:.45s}
+    .schema-bar:nth-child(6){height:86px;animation-delay:.55s}
+    .schema-bar:nth-child(7){height:132px;animation-delay:.65s}
+    .schema-bar:nth-child(8){height:108px;animation-delay:.75s}
+    .schema-bar:nth-child(9){height:146px;animation-delay:.85s}
+
+    @keyframes barMove {
+        from { transform:scaleY(.82); opacity:.42; }
+        to { transform:scaleY(1.06); opacity:.88; }
+    }
+
+    .schema-line {
+        position:absolute;
+        right:38px;
+        top:22px;
+        width:650px;
+        height:210px;
+    }
+
+    .schema-line svg {
+        width:100%;
+        height:100%;
+        overflow:visible;
+    }
+
+    .schema-line .glow-path {
+        fill:none;
+        stroke:#52E7FF;
+        stroke-width:12;
+        stroke-linecap:round;
+        stroke-linejoin:round;
+        opacity:.12;
+    }
+
+    .schema-line .main-path {
+        fill:none;
+        stroke:url(#heroLineGradient);
+        stroke-width:3.8;
+        stroke-linecap:round;
+        stroke-linejoin:round;
+        stroke-dasharray:900;
+        stroke-dashoffset:900;
+        animation:drawHeroLine 3.8s ease-in-out infinite;
+        filter:drop-shadow(0 0 10px rgba(82,231,255,.45));
+    }
+
+    @keyframes drawHeroLine {
+        0% { stroke-dashoffset:900; opacity:.45; }
+        45% { stroke-dashoffset:0; opacity:1; }
+        100% { stroke-dashoffset:0; opacity:1; }
+    }
+
+    .schema-node {
+        fill:#8CF6FF;
+        stroke:rgba(255,255,255,.85);
+        stroke-width:2;
+        filter:drop-shadow(0 0 8px rgba(140,246,255,.75));
+        animation:nodeBlink 2.4s ease-in-out infinite;
+    }
+
+    .schema-node:nth-of-type(2){animation-delay:.15s}
+    .schema-node:nth-of-type(3){animation-delay:.3s}
+    .schema-node:nth-of-type(4){animation-delay:.45s}
+    .schema-node:nth-of-type(5){animation-delay:.6s}
+
+    @keyframes nodeBlink {
+        0%,100% { opacity:.55; transform:scale(.92); }
+        50% { opacity:1; transform:scale(1.12); }
+    }
+
+    .schema-radar {
+        position:absolute;
+        right:62px;
+        top:34px;
+        width:165px;
+        height:165px;
+        border-radius:50%;
+        border:1px solid rgba(93,232,255,.26);
+        box-shadow:0 0 34px rgba(93,232,255,.12);
+        animation:radarRotate 8s linear infinite;
+    }
+
+    .schema-radar::before,
+    .schema-radar::after {
+        content:"";
+        position:absolute;
+        border-radius:50%;
+        inset:26px;
+        border:1px solid rgba(93,232,255,.25);
+    }
+
+    .schema-radar::after {
+        inset:54px;
+        background:radial-gradient(circle, rgba(101,240,255,.95), rgba(122,60,255,.50) 42%, transparent 68%);
+        box-shadow:0 0 34px rgba(101,240,255,.65);
+    }
+
+    .schema-wave {
+        position:absolute;
+        right:0;
+        bottom:8px;
+        width:650px;
+        height:96px;
+        opacity:.58;
+        background:
+            radial-gradient(circle at 70% 55%, rgba(85,223,255,.30), transparent 22%),
+            linear-gradient(90deg, transparent, rgba(47,124,255,.16), transparent);
+        border-radius:50%;
+        transform:skewX(-18deg);
+        animation:waveFloat 5.8s ease-in-out infinite;
+    }
+
+    @keyframes waveFloat {
+        0%,100% { transform:skewX(-18deg) translateY(0); opacity:.45; }
+        50% { transform:skewX(-18deg) translateY(-9px); opacity:.7; }
+    }
+
+
+    .metric-grid {
+        display:grid;
+        grid-template-columns:repeat(4,minmax(0,1fr));
+        gap:1.15rem;
+        margin:1rem 0;
+    }
+
+    .metric-card {
+        position:relative;
+        overflow:hidden;
+        border-radius:18px;
+        min-height:116px;
+        color:white;
+        padding:1.15rem 1.2rem;
+        box-shadow:0 18px 44px rgba(26,62,137,.14);
+    }
+
+    .metric-card::after {
+        content:"";
+        position:absolute;
+        right:-27px;
+        bottom:-36px;
+        width:120px;
+        height:120px;
+        border-radius:999px;
+        background:rgba(255,255,255,.18);
+    }
+
+    .metric-card.blue { background:linear-gradient(135deg,#1F6DFF,#318BFF); }
+    .metric-card.orange { background:linear-gradient(135deg,#FF8A00,#FFB223); }
+    .metric-card.green { background:linear-gradient(135deg,#08A96B,#35D89F); }
+    .metric-card.purple { background:linear-gradient(135deg,#713BFF,#A66BFF); }
+
+    .metric-label {
+        font-size:.82rem;
+        font-weight:900;
+        text-transform:uppercase;
+        letter-spacing:.04em;
+        color:rgba(255,255,255,.92);
+        position:relative;
+        z-index:2;
+    }
+
+    .metric-value {
+        font-size:1.75rem;
+        font-weight:900;
+        letter-spacing:-.04em;
+        margin-top:.35rem;
+        position:relative;
+        z-index:2;
+    }
+
+    .metric-sub {
+        font-size:.88rem;
+        color:rgba(255,255,255,.90);
+        font-weight:700;
+        margin-top:.28rem;
+        position:relative;
+        z-index:2;
+    }
+
+    .section-card {
+        background:rgba(255,255,255,.94);
+        border:1px solid #E2EAF7;
+        border-radius:20px;
+        box-shadow:0 14px 36px rgba(21,54,108,.08);
+        padding:1.25rem;
+        margin-bottom:1rem;
+    }
+
+    .section-title {
+        display:flex;
+        align-items:center;
+        gap:.8rem;
+        color:#0D2A61;
+        font-size:1.02rem;
+        font-weight:900;
+        text-transform:uppercase;
+        letter-spacing:.035em;
+        margin-bottom:1rem;
+    }
+
+    .title-icon {
+        width:24px;
+        height:24px;
+        border-radius:8px;
+        background:linear-gradient(135deg,#2F7CFF,#20D8C5);
+        position:relative;
+        flex-shrink:0;
+    }
+
+    .reco-card {
+        display:grid;
+        grid-template-columns:110px 1fr;
+        gap:1.35rem;
+        align-items:center;
+    }
+
+    .robot {
+        width:104px;
+        height:104px;
+        border-radius:24px;
+        background:
+            radial-gradient(circle at 50% 50%, rgba(117,244,255,.80), transparent 16%),
+            radial-gradient(circle at 35% 34%, rgba(122,60,255,.75), transparent 28%),
+            linear-gradient(135deg,#0E3B94,#001F69 50%,#02C6D8);
+        position:relative;
+        box-shadow:0 20px 40px rgba(47,124,255,.18);
+    }
+
+    .robot::before {
+        content:"";
+        position:absolute;
+        width:58px;
+        height:40px;
+        border-radius:18px;
+        background:rgba(255,255,255,.22);
+        border:2px solid rgba(143,244,255,.65);
+        left:23px;
+        top:30px;
+    }
+
+    .robot::after {
+        content:"";
+        position:absolute;
+        width:8px;
+        height:8px;
+        border-radius:999px;
+        background:#73F5FF;
+        left:39px;
+        top:47px;
+        box-shadow:28px 0 0 #73F5FF;
+    }
+
+    .kicker {
+        color:#286EFF;
+        font-size:.82rem;
+        font-weight:900;
+        text-transform:uppercase;
+        letter-spacing:.09em;
+    }
+
+    .reco-title {
+        color:#0C2446;
+        font-size:1.55rem;
+        line-height:1.08;
+        font-weight:900;
+        letter-spacing:-.035em;
+        margin:.3rem 0 .55rem;
+    }
+
+    .reco-text {
+        color:#596982;
+        line-height:1.5;
+        font-size:.95rem;
+    }
+
+    .status-grid {
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:.85rem;
+    }
+
+    .status-box {
+        border:1px solid #E1EAF6;
+        background:linear-gradient(180deg,#FFFFFF,#FAFCFF);
+        border-radius:15px;
+        padding:1rem;
+    }
+
+    .status-label {
+        color:#52657F;
+        font-size:.9rem;
+        font-weight:800;
+    }
+
+    .status-value {
+        color:#236FFF;
+        font-size:1.45rem;
+        font-weight:900;
+        margin:.25rem 0;
+    }
+
+    .status-text {
+        color:#697A91;
+        font-size:.82rem;
+    }
+
+    .progress {
+        height:7px;
+        border-radius:999px;
+        background:#E6EDF8;
+        overflow:hidden;
+        margin-top:.75rem;
+    }
+
+    .progress-fill {
+        height:100%;
+        border-radius:999px;
+        background:linear-gradient(90deg,#2F7CFF,#20D8C5);
+    }
+
+    .quick-text {
+        color:#52657F;
+        font-size:.92rem;
+        line-height:1.45;
+        padding:.55rem 0 .1rem;
+    }
+
+    .donut {
+        width:160px;
+        height:160px;
+        border-radius:50%;
+        background:conic-gradient(#35DD9A 0deg 360deg);
+        margin:.6rem auto;
+        position:relative;
+    }
+
+    .donut::before {
+        content:"";
+        position:absolute;
+        inset:32px;
+        border-radius:50%;
+        background:white;
+        box-shadow:inset 0 0 0 1px #ECF2FA;
+    }
+
+    .donut-center {
+        position:absolute;
+        inset:0;
+        display:flex;
+        flex-direction:column;
+        gap:.12rem;
+        align-items:center;
+        justify-content:center;
+        color:#172C58;
+        font-weight:900;
+        font-size:1.35rem;
+    }
+
+    .donut-center span {
+        font-size:.84rem;
+        color:#33445E;
+        font-weight:800;
+    }
+
+    .summary-line {
+        display:grid;
+        grid-template-columns:1fr auto;
+        gap:.7rem;
+        align-items:center;
+        color:#536782;
+        font-size:.9rem;
+        margin:.48rem 0;
+    }
+
+    .summary-line span {
+        color:#536782;
+    }
+
+    .summary-line b {
+        color:#0C2446;
+        font-weight:900;
+    }
+
+    .quick-actions {
+        display:grid;
+        gap:.75rem;
+    }
+
+    .quick-action-primary,
+    .quick-action-secondary {
+        height:44px;
+        border-radius:10px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-weight:900;
+    }
+
+    .quick-action-primary {
+        color:white;
+        background:linear-gradient(90deg,#2F7CFF,#8D35FF);
+    }
+
+    .quick-action-secondary {
+        color:#38506E;
+        background:white;
+        border:1px solid #D3E0F2;
+    }
+
+    [data-testid="stButton"] > button {
+        border-radius:14px !important;
+        min-height:52px !important;
+        font-weight:900 !important;
+        border:1px solid #D9E5F4 !important;
+    }
+
+
+/* =========================
+   ICONES PREMIUM DESSINEES
+========================= */
+
+.metric-icon-wrap {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:.8rem;
+    margin-bottom:.55rem;
+    position:relative;
+    z-index:2;
+}
+
+.metric-icon-mini {
+    width:58px;
+    height:58px;
+    border-radius:17px;
+    background:rgba(255,255,255,.18);
+    backdrop-filter:blur(5px);
+    position:relative;
+    overflow:hidden;
+    flex-shrink:0;
+    border:1px solid rgba(255,255,255,.16);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.15);
+}
+
+.metric-icon-mini.wallet::before {
+    content:"";
+    position:absolute;
+    width:30px;
+    height:21px;
+    border-radius:8px;
+    background:#fff;
+    left:11px;
+    top:17px;
+    box-shadow:0 4px 10px rgba(0,0,0,.10);
+}
+.metric-icon-mini.wallet::after {
+    content:"";
+    position:absolute;
+    width:13px;
+    height:10px;
+    border-radius:6px;
+    background:#72B7FF;
+    top:22px;
+    right:10px;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.92);
+}
+
+.metric-icon-mini.shield::before {
+    content:"";
+    position:absolute;
+    width:25px;
+    height:29px;
+    background:#fff;
+    clip-path:polygon(50% 0%, 88% 18%, 88% 52%, 50% 100%, 12% 52%, 12% 18%);
+    top:11px;
+    left:13.5px;
+    box-shadow:0 5px 12px rgba(0,0,0,.12);
+}
+.metric-icon-mini.shield::after {
+    content:"";
+    position:absolute;
+    width:9px;
+    height:14px;
+    border:3px solid #FF9B16;
+    border-top:none;
+    border-left:none;
+    transform:rotate(45deg);
+    top:17px;
+    left:21px;
+}
+
+.metric-icon-mini.growth::before {
+    content:"";
+    position:absolute;
+    width:25px;
+    height:22px;
+    border-left:4px solid #fff;
+    border-bottom:4px solid #fff;
+    left:12px;
+    bottom:12px;
+    border-radius:0 0 0 4px;
+}
+.metric-icon-mini.growth::after {
+    content:"";
+    position:absolute;
+    width:23px;
+    height:23px;
+    border-top:4px solid #fff;
+    border-right:4px solid #fff;
+    transform:rotate(45deg);
+    right:12px;
+    top:14px;
+    border-radius:0 5px 0 0;
+}
+
+.metric-icon-mini.brain::before {
+    content:"";
+    position:absolute;
+    width:25px;
+    height:25px;
+    border-radius:50%;
+    background:rgba(255,255,255,.21);
+    top:13.5px;
+    left:13.5px;
+    box-shadow:
+        -7px 0 0 rgba(255,255,255,.21),
+        7px 0 0 rgba(255,255,255,.21),
+        0 -7px 0 rgba(255,255,255,.21),
+        0 7px 0 rgba(255,255,255,.21);
+}
+.metric-icon-mini.brain::after {
+    content:"";
+    position:absolute;
+    width:14px;
+    height:22px;
+    border-left:3px solid #fff;
+    border-right:3px solid #fff;
+    border-radius:12px;
+    top:15px;
+    left:19px;
+}
+
+/* Robot premium du bloc recommandation */
+.robot-premium {
+    width:112px;
+    height:112px;
+    border-radius:30px;
+    position:relative;
+    overflow:hidden;
+    background:
+        radial-gradient(circle at 30% 28%, rgba(134,92,255,.85), transparent 28%),
+        radial-gradient(circle at 78% 76%, rgba(35,224,255,.50), transparent 34%),
+        linear-gradient(135deg,#0A2F7E 0%, #172E88 42%, #061B5A 100%);
+    box-shadow:0 22px 44px rgba(47,124,255,.22);
+    border:1px solid rgba(255,255,255,.14);
+}
+.robot-premium::before {
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,.10), transparent 52%),
+        linear-gradient(120deg, transparent 0%, rgba(255,255,255,.12) 46%, transparent 58%);
+}
+.robot-antenna {
+    position:absolute;
+    width:4px;
+    height:15px;
+    background:#9AF6FF;
+    top:19px;
+    left:54px;
+    border-radius:999px;
+    box-shadow:0 0 9px rgba(154,246,255,.65);
+}
+.robot-antenna::after {
+    content:"";
+    position:absolute;
+    width:11px;
+    height:11px;
+    border-radius:50%;
+    background:#7CF2FF;
+    left:-3.5px;
+    top:-7px;
+    box-shadow:0 0 13px rgba(124,242,255,.75);
+}
+.robot-head {
+    position:absolute;
+    width:60px;
+    height:41px;
+    left:26px;
+    top:33px;
+    border-radius:17px;
+    background:linear-gradient(135deg,#88F3FF,#B7FFFF);
+    box-shadow:0 0 22px rgba(117,245,255,.45);
+    border:2px solid rgba(255,255,255,.55);
+}
+.robot-head::before,
+.robot-head::after {
+    content:"";
+    position:absolute;
+    top:15px;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#315DFF;
+    box-shadow:0 0 6px rgba(49,93,255,.35);
+}
+.robot-head::before { left:16px; }
+.robot-head::after { right:16px; }
+.robot-mouth {
+    position:absolute;
+    width:20px;
+    height:4px;
+    border-radius:999px;
+    background:rgba(49,93,255,.45);
+    top:59px;
+    left:46px;
+    z-index:3;
+}
+.robot-ear-left,
+.robot-ear-right {
+    position:absolute;
+    width:10px;
+    height:22px;
+    border-radius:999px;
+    background:rgba(135,243,255,.75);
+    top:43px;
+    z-index:2;
+}
+.robot-ear-left { left:18px; }
+.robot-ear-right { right:18px; }
+.robot-body {
+    position:absolute;
+    width:44px;
+    height:22px;
+    left:34px;
+    top:76px;
+    border-radius:13px;
+    background:rgba(255,255,255,.20);
+    border:1px solid rgba(255,255,255,.22);
+}
+.robot-body::before {
+    content:"";
+    position:absolute;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#72F3FF;
+    left:18px;
+    top:7px;
+}
+
+/* Icones de sections */
+.section-icon {
+    width:28px;
+    height:28px;
+    border-radius:9px;
+    position:relative;
+    flex-shrink:0;
+    background:linear-gradient(135deg,#2F7CFF,#20D8C5);
+    box-shadow:0 7px 16px rgba(47,124,255,.18);
+}
+
+.section-icon.wallet::before {
+    content:"";
+    position:absolute;
+    width:16px;
+    height:11px;
+    border-radius:4px;
+    background:white;
+    top:9px;
+    left:6px;
+}
+.section-icon.wallet::after {
+    content:"";
+    position:absolute;
+    width:6px;
+    height:5px;
+    border-radius:3px;
+    background:#2F7CFF;
+    top:12px;
+    right:6px;
+}
+
+.section-icon.pie::before {
+    content:"";
+    position:absolute;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:white;
+    top:6px;
+    left:6px;
+}
+.section-icon.pie::after {
+    content:"";
+    position:absolute;
+    width:16px;
+    height:16px;
+    top:6px;
+    left:13px;
+    background:linear-gradient(135deg,#2F7CFF,#20D8C5);
+    clip-path:polygon(0 0,100% 0,100% 100%,0 50%);
+    border-top-right-radius:8px;
+    border-bottom-right-radius:8px;
+}
+
+.section-icon.list::before {
+    content:"";
+    position:absolute;
+    width:15px;
+    height:3px;
+    background:white;
+    left:7px;
+    top:8px;
+    box-shadow:0 6px 0 white, 0 12px 0 white;
+    border-radius:999px;
+}
+
+.section-icon.bolt::before {
+    content:"";
+    position:absolute;
+    width:13px;
+    height:19px;
+    background:white;
+    clip-path:polygon(55% 0,100% 0,65% 42%,100% 42%,35% 100%,48% 58%,15% 58%);
+    top:5px;
+    left:8px;
+}
+
+.section-icon.spark::before {
+    content:"";
+    position:absolute;
+    width:16px;
+    height:16px;
+    background:white;
+    clip-path:polygon(50% 0,60% 36%,100% 50%,60% 64%,50% 100%,40% 64%,0 50%,40% 36%);
+    left:6px;
+    top:6px;
+}
+
+.reco-card {
+    grid-template-columns:122px 1fr !important;
+}
+
+    
+    .metric-icon-mini {
+        width:58px !important;
+        height:58px !important;
+        border-radius:20px !important;
+    }
+
+    .metric-card {
+        min-height:126px !important;
+        padding:1.25rem 1.32rem !important;
+    }
+
+    .metric-value {
+        font-size:1.95rem !important;
+    }
+
+@media (max-width:1200px) {
+        .metric-grid, .status-grid { grid-template-columns:1fr; }
+        .reco-card { grid-template-columns:1fr; }
+    }
+    </style>
+    """)
+
+
+# ============================================================
+# HELPERS DONNÉES
 # ============================================================
 
 DEFAULT_NAMES = {
-    "AAPL":"Apple Inc.","MSFT":"Microsoft Corp.","NVDA":"NVIDIA Corp.",
-    "AMZN":"Amazon.com Inc.","GOOGL":"Alphabet Inc.","META":"Meta Platforms",
-    "TSLA":"Tesla Inc.","JPM":"JPMorgan Chase","V":"Visa Inc.",
-    "JNJ":"Johnson & Johnson","WMT":"Walmart Inc.","HD":"Home Depot",
-    "PG":"Procter & Gamble","KO":"Coca-Cola Co.","MCD":"McDonald's Corp.",
-    "BA":"Boeing Co.","GS":"Goldman Sachs","CVX":"Chevron Corp.",
-    "IBM":"IBM Corp.","INTC":"Intel Corp.","CSCO":"Cisco Systems",
-    "DIS":"Walt Disney Co.","VZ":"Verizon","MRK":"Merck & Co.",
-    "UNH":"UnitedHealth Group","AXP":"American Express","CAT":"Caterpillar",
-    "HON":"Honeywell","MMM":"3M Co.","TRV":"Travelers Cos.",
-    "CRM":"Salesforce","AMGN":"Amgen","DOW":"Dow Inc.","NKE":"Nike",
+    "AAPL": "Apple",
+    "MSFT": "Microsoft",
+    "NVDA": "NVIDIA",
+    "AMZN": "Amazon",
+    "GOOGL": "Alphabet",
+    "GOOG": "Alphabet",
+    "META": "Meta",
+    "JNJ": "Johnson & Johnson",
+    "JPM": "JPMorgan Chase",
+    "V": "Visa",
+    "KO": "Coca-Cola",
+    "PG": "Procter & Gamble",
+    "WMT": "Walmart",
+    "SPY": "SPDR S&P 500 ETF",
+    "VTI": "Vanguard Total Market ETF",
 }
 
 DEFAULT_SECTORS = {
-    "AAPL":"Technologie","MSFT":"Technologie","NVDA":"Technologie",
-    "INTC":"Technologie","IBM":"Technologie","CSCO":"Technologie","CRM":"Technologie",
-    "JPM":"Finance","GS":"Finance","AXP":"Finance","V":"Finance","TRV":"Finance",
-    "JNJ":"Santé","MRK":"Santé","AMGN":"Santé","UNH":"Santé",
-    "BA":"Industrie","CAT":"Industrie","HON":"Industrie","MMM":"Industrie",
-    "WMT":"Consommation de base","KO":"Consommation de base","PG":"Consommation de base",
-    "MCD":"Consommation discrétionnaire","HD":"Consommation discrétionnaire",
-    "DIS":"Consommation discrétionnaire","NKE":"Consommation discrétionnaire",
-    "CVX":"Énergie","DOW":"Matériaux","VZ":"Télécommunications",
+    "AAPL": "Technologie",
+    "MSFT": "Technologie",
+    "NVDA": "Technologie",
+    "AMZN": "Consommation discrétionnaire",
+    "GOOGL": "Communication",
+    "GOOG": "Communication",
+    "META": "Communication",
+    "JNJ": "Santé",
+    "JPM": "Finance",
+    "V": "Finance",
+    "KO": "Consommation de base",
+    "PG": "Consommation de base",
+    "WMT": "Consommation de base",
+    "SPY": "ETF diversifié",
+    "VTI": "ETF diversifié",
 }
 
 
-def get_latest_price(ticker: str):
+@st.cache_data(show_spinner=False, ttl=900)
+def get_latest_price(ticker):
     try:
         import yfinance as yf
-        t = yf.Ticker(ticker)
-        hist = t.history(period="2d")
-        if hist.empty:
+        ticker = str(ticker).upper().strip()
+        data = yf.download(ticker, period="5d", interval="1d", progress=False, auto_adjust=False)
+        if data is None or data.empty or "Close" not in data.columns:
             return None
-        return float(hist["Close"].iloc[-1])
+        close = data["Close"].dropna()
+        if close.empty:
+            return None
+        value = close.iloc[-1]
+        if hasattr(value, "iloc"):
+            value = value.iloc[0]
+        return float(value)
     except Exception:
         return None
 
@@ -847,15 +1559,15 @@ def build_position_rows(positions):
     invested_cost = 0.0
     real_prices = 0
 
-    for pos in positions:
+    for position in positions:
         try:
-            if isinstance(pos, dict):
-                ticker = str(pos.get("ticker", "")).upper().strip()
-                company_name = pos.get("company_name") or pos.get("name") or ""
-                qty = float(pos.get("quantity", 0) or 0)
-                avg_buy_price = float(pos.get("avg_buy_price", 0) or 0)
-            else:
-                ticker, company_name, qty, avg_buy_price = pos[0], pos[1], float(pos[2]), float(pos[3])
+            ticker, company_name, qty, avg_buy_price = position
+        except Exception:
+            continue
+
+        try:
+            qty = float(qty)
+            avg_buy_price = float(avg_buy_price)
         except Exception:
             continue
 
@@ -883,10 +1595,14 @@ def build_position_rows(positions):
         invested_cost += cost
 
         rows.append({
-            "ticker": ticker, "name": company_name,
-            "qty": qty, "avg": avg_buy_price,
-            "current": current_price, "value": value,
-            "cost": cost, "pnl_value": pnl_value,
+            "ticker": ticker,
+            "name": company_name,
+            "qty": qty,
+            "avg": avg_buy_price,
+            "current": current_price,
+            "value": value,
+            "cost": cost,
+            "pnl_value": pnl_value,
             "pnl_pct": pnl_pct,
             "sector": DEFAULT_SECTORS.get(ticker, "Autre"),
             "source": source,
@@ -905,65 +1621,104 @@ def try_get_orders(user_id):
 
 def get_next_action(position_rows, cash_balance, total_portfolio, profil, nb_analyses, nb_recommended):
     cash_weight = (cash_balance / total_portfolio * 100) if total_portfolio else 0
+
     if nb_analyses == 0:
-        return ("Compléter votre profil investisseur",
-                "Commencez par répondre au questionnaire IA pour que FinPilot adapte les recommandations à votre tolérance au risque.",
-                "pages/analyse.py", "Analyser mon profil")
+        return (
+            "Compléter votre profil investisseur",
+            "Commencez par répondre au questionnaire IA pour que FinPilot adapte les recommandations à votre tolérance au risque.",
+            "pages/analyse.py",
+            "Analyser mon profil",
+        )
+
     if nb_recommended == 0:
-        return ("Générer des recommandations IA",
-                "Votre profil est connu, mais aucune recommandation n'est sauvegardée. Lancez le calcul financier pour obtenir un Top 5 exploitable.",
-                "pages/analyse.py", "Voir les recommandations")
+        return (
+            "Générer des recommandations IA",
+            "Votre profil est connu, mais aucune recommandation n’est sauvegardée. Lancez le calcul financier pour obtenir un Top 5 exploitable.",
+            "pages/analyse.py",
+            "Voir les recommandations",
+        )
+
     if not position_rows:
-        return ("Construire un premier portefeuille",
-                "Vous avez du cash disponible mais aucune position ouverte. Simulez un premier achat depuis les recommandations IA.",
-                "pages/analyse.py", "Choisir une action")
+        return (
+            "Construire un premier portefeuille",
+            "Vous avez du cash disponible mais aucune position ouverte. Passez par les recommandations IA puis simulez un premier achat.",
+            "pages/analyse.py",
+            "Choisir une action",
+        )
+
     if len(position_rows) == 1:
-        return ("Réduire la concentration",
-                "Votre portefeuille contient une seule ligne. Ajouter une deuxième position peut réduire le risque spécifique.",
-                "pages/portefeuille.py", "Gérer le portefeuille")
+        return (
+            "Réduire la concentration",
+            "Votre portefeuille contient une seule ligne. Ajouter une deuxième position ou un ETF peut réduire le risque spécifique.",
+            "pages/portefeuille.py",
+            "Gérer le portefeuille",
+        )
+
     if cash_weight > 70:
-        return ("Utiliser une partie du cash",
-                f"Votre portefeuille reste très liquide ({cash_weight:.1f}% de cash). Une allocation progressive peut améliorer le potentiel de rendement.",
-                "pages/analyse.py", "Identifier des opportunités")
-    return ("Suivre et ajuster le portefeuille",
-            f"Profil dominant : {profil}. Continuez à suivre les positions et comparer les recommandations IA avant tout nouvel arbitrage.",
-            "pages/portefeuille.py", "Voir le portefeuille")
+        return (
+            "Utiliser une partie du cash",
+            f"Votre portefeuille reste très liquide avec {cash_weight:.1f}% de cash. Une allocation progressive peut améliorer le potentiel de rendement.",
+            "pages/analyse.py",
+            "Identifier des opportunités",
+        )
+
+    return (
+        "Suivre et ajuster le portefeuille",
+        f"Votre profil dominant est {profil}. Continuez à suivre les positions et à comparer les recommandations IA avant tout nouvel arbitrage.",
+        "pages/portefeuille.py",
+        "Voir le portefeuille",
+    )
 
 
 def portfolio_health(position_rows, cash_balance, total_portfolio):
     cash_weight = cash_balance / total_portfolio * 100 if total_portfolio > 0 else 0
+
     if not position_rows:
-        diversification, status = 0, "À construire"
+        diversification = 0
+        status = "À construire"
         text = "Aucune position ouverte. Le portefeuille est essentiellement liquide."
     elif len(position_rows) == 1:
-        diversification, status = 25, "Concentré"
+        diversification = 25
+        status = "Concentré"
         text = "Une seule position ouverte. Le risque spécifique est élevé."
     elif len(position_rows) < 4:
-        diversification, status = 55, "En construction"
-        text = "Quelques positions ouvertes. La diversification peut encore être renforcée."
+        diversification = 55
+        status = "En construction"
+        text = "Quelques positions sont ouvertes. La diversification peut encore être renforcée."
     else:
-        diversification, status = 80, "Diversifié"
-        text = "Plusieurs positions ouvertes. Le portefeuille est plus équilibré."
-    liquidity_status = "Très liquide" if cash_weight > 70 else ("Équilibré" if cash_weight > 35 else "Investi")
+        diversification = 80
+        status = "Diversifié"
+        text = "Plusieurs positions sont ouvertes. Le portefeuille est plus équilibré."
+
+    if cash_weight > 70:
+        liquidity_status = "Très liquide"
+    elif cash_weight > 35:
+        liquidity_status = "Équilibré"
+    else:
+        liquidity_status = "Investi"
+
     return cash_weight, diversification, status, liquidity_status, text
 
 
 def extract_recent_recommendations(recommended_rows, limit=4):
     items = []
+
     for row in recommended_rows[:limit]:
         try:
             if isinstance(row, dict):
                 ticker = row.get("ticker") or row.get("symbol") or ""
-                name = row.get("name") or DEFAULT_NAMES.get(str(ticker).upper(), str(ticker).upper())
+                name = row.get("name") or row.get("company_name") or DEFAULT_NAMES.get(str(ticker).upper(), str(ticker).upper())
                 score = row.get("score")
             else:
                 ticker = str(row[0]).upper().strip()
                 name = DEFAULT_NAMES.get(ticker, ticker)
                 score = row[1] if len(row) > 1 and isinstance(row[1], (int, float)) else None
+
             if ticker:
                 items.append((str(ticker).upper(), name, score))
         except Exception:
             continue
+
     return items
 
 
@@ -994,7 +1749,7 @@ total_portfolio = cash_balance + invested_value
 pnl = invested_value - invested_cost
 pnl_pct = (pnl / invested_cost * 100) if invested_cost > 0 else 0
 pnl_sign = "+" if pnl >= 0 else ""
-pnl_css = "positive" if pnl >= 0 else "negative"
+pnl_bg_class = "green" if pnl >= 0 else "orange"
 
 nb_positions = len(position_rows)
 nb_analyses = insights.get("nb_analyses", 0)
@@ -1002,18 +1757,34 @@ nb_recommended = insights.get("nb_recommended", len(recommended_rows))
 nb_orders = len(orders)
 
 next_title, next_text, next_page, next_button = get_next_action(
-    position_rows, cash_balance, total_portfolio, profil, nb_analyses, nb_recommended)
+    position_rows,
+    cash_balance,
+    total_portfolio,
+    profil,
+    nb_analyses,
+    nb_recommended,
+)
 
 cash_weight, diversification_score, diversification_status, liquidity_status, health_text = portfolio_health(
-    position_rows, cash_balance, total_portfolio)
+    position_rows,
+    cash_balance,
+    total_portfolio,
+)
 
 recent_recos = extract_recent_recommendations(recommended_rows, limit=4)
 
-# Injecter CSS dashboard
-html(DASHBOARD_CSS)
+inject_dashboard_style()
 
-# Sidebar
-render_sidebar(active_page="dashboard", cash_balance=cash_balance, logout_callback=logout)
+
+# ============================================================
+# SIDEBAR PREMIUM COMMUNE
+# ============================================================
+
+render_sidebar(
+    active_page="dashboard",
+    cash_balance=cash_balance,
+    logout_callback=logout,
+)
 
 
 # ============================================================
@@ -1021,94 +1792,124 @@ render_sidebar(active_page="dashboard", cash_balance=cash_balance, logout_callba
 # ============================================================
 
 html(f"""
-<div class="db-hero">
-    <div class="db-hero-grid"></div>
-    <div class="db-hero-chart">
-        <svg viewBox="0 0 600 220" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <linearGradient id="hg" x1="0" x2="1">
-                    <stop offset="0%" stop-color="#1A56DB" stop-opacity="0"/>
-                    <stop offset="50%" stop-color="#60A5FA"/>
-                    <stop offset="100%" stop-color="#FFFFFF"/>
-                </linearGradient>
-            </defs>
-            <path d="M0,180 C60,160 90,120 140,135 C185,150 200,180 245,145
-                     C285,112 310,118 350,88 C400,48 420,105 455,90
-                     C500,70 510,30 560,18 C575,14 590,12 600,10"
-                  fill="none" stroke="url(#hg)" stroke-width="2.5"
-                  stroke-linecap="round" opacity="0.7"/>
-            <circle cx="140" cy="135" r="4" fill="#60A5FA" opacity="0.8"/>
-            <circle cx="245" cy="145" r="4" fill="#60A5FA" opacity="0.8"/>
-            <circle cx="350" cy="88"  r="4" fill="#93C5FD" opacity="0.8"/>
-            <circle cx="455" cy="90"  r="4" fill="#93C5FD" opacity="0.8"/>
-            <circle cx="560" cy="18"  r="4" fill="#BFDBFE" opacity="0.8"/>
-        </svg>
+<div class="hero-premium">
+    <div class="hero-schema">
+        <div class="schema-grid"></div>
+        <div class="schema-bars">
+            <div class="schema-bar"></div>
+            <div class="schema-bar"></div>
+            <div class="schema-bar"></div>
+            <div class="schema-bar"></div>
+            <div class="schema-bar"></div>
+            <div class="schema-bar"></div>
+            <div class="schema-bar"></div>
+            <div class="schema-bar"></div>
+            <div class="schema-bar"></div>
+        </div>
+        <div class="schema-line">
+            <svg viewBox="0 0 650 210" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="heroLineGradient" x1="0" x2="1">
+                        <stop offset="0%" stop-color="#1ED9FF"/>
+                        <stop offset="48%" stop-color="#77F7FF"/>
+                        <stop offset="100%" stop-color="#FFFFFF"/>
+                    </linearGradient>
+                </defs>
+                <path class="glow-path" d="M10,145 C55,122 78,86 120,106 C158,124 176,164 214,128 C249,94 278,102 310,72 C354,31 383,93 414,78 C461,54 472,18 516,34 C548,46 570,22 635,14"/>
+                <path class="main-path" d="M10,145 C55,122 78,86 120,106 C158,124 176,164 214,128 C249,94 278,102 310,72 C354,31 383,93 414,78 C461,54 472,18 516,34 C548,46 570,22 635,14"/>
+                <circle class="schema-node" cx="120" cy="106" r="5"/>
+                <circle class="schema-node" cx="214" cy="128" r="5"/>
+                <circle class="schema-node" cx="310" cy="72" r="5"/>
+                <circle class="schema-node" cx="414" cy="78" r="5"/>
+                <circle class="schema-node" cx="516" cy="34" r="5"/>
+            </svg>
+        </div>
+        <div class="schema-radar"></div>
+        <div class="schema-wave"></div>
     </div>
-    <div class="db-hero-content">
-        <div class="db-hero-label">✦ Tableau de bord</div>
-        <div class="db-hero-title">Bienvenue, {username}</div>
-        <div class="db-hero-sub">
-            Votre tableau de bord synthétise votre situation financière et l'activité IA.
-            Obtenez une vue d'ensemble claire et des actions recommandées pour avancer.
-        </div>
-        <div class="db-hero-badges">
-            <div class="db-hero-badge">Profil : {profil}</div>
-            <div class="db-hero-badge">Capital : {money_dollar(total_portfolio)}</div>
-            <div class="db-hero-badge">Positions : {nb_positions}</div>
-            <div class="db-hero-badge">Analyses IA : {nb_analyses}</div>
-        </div>
+
+    <h1>Bienvenue sur FinPilot</h1>
+    <p>
+        Votre tableau de bord synthétise votre situation financière et l'activité IA.
+        Obtenez une vue d'ensemble claire et des actions recommandées pour avancer.
+    </p>
+    <div class="hero-badges">
+        <div class="hero-badge">Profil : {profil}</div>
+        <div class="hero-badge">Capital : {money_dollar(total_portfolio)}</div>
+        <div class="hero-badge">Positions : {nb_positions}</div>
+        <div class="hero-badge">Analyses IA : {nb_analyses}</div>
     </div>
 </div>
 """)
 
 
 # ============================================================
-# KPI CARDS
+# KPI
 # ============================================================
 
 html(f"""
-<div class="db-kpi-grid">
-    <div class="db-kpi accent-blue">
-        <div class="db-kpi-label">Valeur totale</div>
-        <div class="db-kpi-value">{money_dollar(total_portfolio)}</div>
-        <div class="db-kpi-sub">Portefeuille + cash</div>
+<div class="metric-grid">
+    <div class="metric-card blue">
+        <div class="metric-icon-wrap">
+            <div class="metric-label">Valeur totale</div>
+            <div class="metric-icon-mini wallet"></div>
+        </div>
+        <div class="metric-value">{money_dollar(total_portfolio)}</div>
+        <div class="metric-sub">Portefeuille + cash</div>
     </div>
-    <div class="db-kpi accent-indigo">
-        <div class="db-kpi-label">Profil investisseur</div>
-        <div class="db-kpi-value">{profil}</div>
-        <div class="db-kpi-sub">Score risque : {risk_score}/100</div>
+
+    <div class="metric-card orange">
+        <div class="metric-icon-wrap">
+            <div class="metric-label">Profil investisseur</div>
+            <div class="metric-icon-mini shield"></div>
+        </div>
+        <div class="metric-value">{profil}</div>
+        <div class="metric-sub">Score risque : {risk_score}/100</div>
     </div>
-    <div class="db-kpi {'accent-green' if pnl >= 0 else 'accent-red'}">
-        <div class="db-kpi-label">Gain latent</div>
-        <div class="db-kpi-value {pnl_css}">{pnl_sign}{money_dollar(pnl)}</div>
-        <div class="db-kpi-sub">{pnl_sign}{pnl_pct:.2f}% sur positions</div>
+
+    <div class="metric-card {pnl_bg_class}">
+        <div class="metric-icon-wrap">
+            <div class="metric-label">Gain latent</div>
+            <div class="metric-icon-mini growth"></div>
+        </div>
+        <div class="metric-value">{pnl_sign}{money_dollar(pnl)}</div>
+        <div class="metric-sub">{pnl_sign}{pnl_pct:.2f}% sur positions</div>
     </div>
-    <div class="db-kpi accent-indigo">
-        <div class="db-kpi-label">Activité IA</div>
-        <div class="db-kpi-value">{nb_analyses}</div>
-        <div class="db-kpi-sub">Analyse(s) de profil</div>
+
+    <div class="metric-card purple">
+        <div class="metric-icon-wrap">
+            <div class="metric-label">Activité IA</div>
+            <div class="metric-icon-mini brain"></div>
+        </div>
+        <div class="metric-value">{nb_analyses}</div>
+        <div class="metric-sub">Analyse(s) de profil</div>
     </div>
 </div>
 """)
 
 
 # ============================================================
-# MAIN CONTENT
+# MAIN
 # ============================================================
 
 left, right = st.columns([1.65, 1], gap="medium")
 
 with left:
-
-    # Recommandation IA
     html(f"""
-    <div class="db-card">
-        <div class="db-reco">
-            <div class="db-reco-icon"></div>
+    <div class="section-card">
+        <div class="reco-card">
+            <div class="robot-premium">
+                <div class="robot-antenna"></div>
+                <div class="robot-ear-left"></div>
+                <div class="robot-ear-right"></div>
+                <div class="robot-head"></div>
+                <div class="robot-mouth"></div>
+                <div class="robot-body"></div>
+            </div>
             <div>
-                <div class="db-reco-kicker">Prochaine action recommandée</div>
-                <div class="db-reco-title">{next_title}</div>
-                <div class="db-reco-text">{next_text}</div>
+                <div class="kicker">Prochaine action recommandée</div>
+                <div class="reco-title">{next_title}</div>
+                <div class="reco-text">{next_text}</div>
             </div>
         </div>
     </div>
@@ -1122,44 +1923,54 @@ with left:
         if st.button("Voir mon portefeuille", use_container_width=True, key="voir_portefeuille_app"):
             st.switch_page("pages/portefeuille.py")
 
-    st.markdown("<div style='height:.2rem'></div>", unsafe_allow_html=True)
-
-    # État portefeuille
     html(f"""
-    <div class="db-card">
-        <div class="db-card-title">État global du portefeuille</div>
-        <div class="db-status-grid">
-            <div class="db-status-box">
-                <div class="db-status-label">Liquidité</div>
-                <div class="db-status-value">{cash_weight:.1f}%</div>
-                <div class="db-status-text">{liquidity_status}</div>
-                <div class="db-progress"><div class="db-progress-fill" style="width:{min(cash_weight,100)}%"></div></div>
+    <div class="section-card">
+        <div class="section-title">
+            <span class="section-icon wallet"></span>
+            <span>État global du portefeuille</span>
+        </div>
+
+        <div class="status-grid">
+            <div class="status-box">
+                <div class="status-label">Liquidité</div>
+                <div class="status-value">{cash_weight:.1f} %</div>
+                <div class="status-text">{liquidity_status}</div>
+                <div class="progress"><div class="progress-fill" style="width:{min(cash_weight, 100)}%;"></div></div>
             </div>
-            <div class="db-status-box">
-                <div class="db-status-label">Diversification</div>
-                <div class="db-status-value">{diversification_score}/100</div>
-                <div class="db-status-text">{diversification_status}</div>
-                <div class="db-progress"><div class="db-progress-fill" style="width:{diversification_score}%"></div></div>
+
+            <div class="status-box">
+                <div class="status-label">Diversification</div>
+                <div class="status-value">{diversification_score}/100</div>
+                <div class="status-text">{diversification_status}</div>
+                <div class="progress"><div class="progress-fill" style="width:{diversification_score}%;"></div></div>
             </div>
-            <div class="db-status-box">
-                <div class="db-status-label">Positions</div>
-                <div class="db-status-value">{nb_positions}</div>
-                <div class="db-status-text">Ligne(s) suivie(s)</div>
-                <div class="db-progress"><div class="db-progress-fill" style="width:{min(nb_positions*18,100)}%"></div></div>
+
+            <div class="status-box">
+                <div class="status-label">Positions</div>
+                <div class="status-value">{nb_positions}</div>
+                <div class="status-text">Ligne(s) actuellement suivie(s)</div>
+                <div class="progress"><div class="progress-fill" style="width:{min(nb_positions * 18, 100)}%;"></div></div>
             </div>
         </div>
-        <div class="db-quick-text"><b>Lecture rapide</b> — {health_text}</div>
+
+        <div class="quick-text">
+            <b>Lecture rapide</b><br>
+            {health_text}
+        </div>
     </div>
     """)
 
-    # Activité IA
     secteur_txt = ", ".join(insights.get("secteurs_favoris", [])) if insights.get("secteurs_favoris") else "Aucune préférence sectorielle dominante"
     action_txt = ", ".join(insights.get("actions_recurrentes", [])[:4]) if insights.get("actions_recurrentes") else "Aucune action récurrente"
 
     html(f"""
-    <div class="db-card">
-        <div class="db-card-title">Dernière activité IA</div>
-        <div class="db-quick-text">
+    <div class="section-card">
+        <div class="section-title">
+            <span class="section-icon spark"></span>
+            <span>Dernière activité IA</span>
+        </div>
+
+        <div class="quick-text">
             <b>Profil dominant :</b> {profil}<br>
             <b>Secteurs fréquents :</b> {secteur_txt}<br>
             <b>Actions analysées :</b> {action_txt}
@@ -1167,100 +1978,105 @@ with left:
     </div>
     """)
 
-    # Recommandations récentes
     if recent_recos:
-        reco_items = ""
         for ticker, name, score in recent_recos:
-            score_html = f'<span class="db-reco-score">Score {score:.1f}</span>' if isinstance(score, (int, float)) else ""
-            reco_items += f"""
-            <div class="db-reco-item">
-                <div>
-                    <div class="db-reco-ticker">{ticker}</div>
-                    <div class="db-reco-name">{name}</div>
-                </div>
-                {score_html}
-            </div>"""
-        html(f'<div class="db-card"><div class="db-card-title">Recommandations récentes</div>{reco_items}</div>')
+            score_txt = f"Score : {score:.1f}" if isinstance(score, (int, float)) else "Recommandation IA"
+            html(f"""
+            <div class="section-card" style="padding:1rem 1.2rem;">
+                <b style="color:#0C2446;">{name} ({ticker})</b>
+                <div style="color:#64748B;margin-top:.25rem;">{score_txt}</div>
+            </div>
+            """)
     else:
         html("""
-        <div class="db-card">
-            <div class="db-card-title">Recommandations récentes</div>
-            <div class="db-quick-text">Lancez une analyse IA pour alimenter cette section.</div>
+        <div class="section-card" style="padding:1rem 1.2rem;">
+            <b style="color:#0C2446;">Aucune recommandation sauvegardée</b>
+            <div style="color:#64748B;margin-top:.25rem;">Lancez une analyse IA pour alimenter cette section.</div>
         </div>
         """)
 
-
 with right:
-
     actions_value = sum(row["value"] for row in position_rows)
-    total_alloc = cash_balance + actions_value if (cash_balance + actions_value) > 0 else 1
-    cash_pct = round(cash_balance / total_alloc * 100)
+    labels = []
+    values = []
 
-    # Pré-construire les lignes de légende hors f-string
-    legend_rows_html = ""
-    for r in position_rows[:4]:
-        pct = round(r["value"] / total_alloc * 100)
-        ticker = r["ticker"]
-        legend_rows_html += (
-            '<div class="db-legend-row">'
-            '<div class="db-legend-dot" style="background:#60A5FA"></div>'
-            f'<span style="color:#374151;font-size:.85rem;font-weight:600;">{ticker}</span>'
-            f'<span style="color:#9CA3AF;font-size:.82rem;margin-left:auto;">{pct}%</span>'
-            '</div>'
-        )
+    if cash_balance > 0:
+        labels.append("Cash")
+        values.append(cash_balance)
 
-    # Répartition
+    if actions_value > 0:
+        labels.append("Positions")
+        values.append(actions_value)
+
+    if not values:
+        labels = ["Cash"]
+        values = [1]
+
+    total_alloc = sum(values)
+    cash_pct = 100 if total_alloc <= 0 else (cash_balance / total_alloc * 100)
+
     html(f"""
-    <div class="db-card">
-        <div class="db-card-title">Répartition simplifiée</div>
-        <div class="db-card-sub">Vue synthétique — détails dans la page Portefeuille.</div>
-        <div class="db-donut-wrap">
-            <div class="db-donut">
-                <div class="db-donut-center">
-                    {cash_pct}%<span>Cash</span>
+    <div class="section-card">
+        <div class="section-title">
+            <span class="section-icon pie"></span>
+            <span>Répartition simplifiée</span>
+        </div>
+        <div style="color:#667995;font-size:.88rem;margin-top:-.65rem;margin-left:2.1rem;">
+            Vue synthétique, sans détails réservés à la page Portefeuille.
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 120px;align-items:center;gap:.8rem;">
+            <div style="position:relative;">
+                <div class="donut">
+                    <div class="donut-center">{cash_pct:.0f} %<span>Cash</span></div>
                 </div>
             </div>
-            <div>
-                <div class="db-legend-row">
-                    <div class="db-legend-dot" style="background:#1A56DB"></div>
-                    <span style="color:#374151;font-size:.85rem;font-weight:600;">Cash</span>
-                    <span style="color:#9CA3AF;font-size:.82rem;margin-left:auto;">{cash_pct}%</span>
-                </div>
-                {legend_rows_html}
+            <div style="color:#0C2446;font-weight:800;font-size:.9rem;">
+                <div><span style="display:inline-block;width:11px;height:11px;border-radius:999px;background:#35DD9A;margin-right:.5rem;"></span>Cash</div>
+                <div style="margin-left:1.65rem;margin-top:.35rem;">{cash_pct:.0f} %</div>
             </div>
         </div>
     </div>
     """)
 
-    # Résumé chiffré
     html(f"""
-    <div class="db-card">
-        <div class="db-card-title">Résumé chiffré</div>
-        <div class="db-summary-row">
-            <span class="db-summary-label">Valeur totale</span>
-            <span class="db-summary-value">{money_dollar(total_portfolio)}</span>
+    <div class="section-card">
+        <div class="section-title">
+            <span class="section-icon list"></span>
+            <span>Résumé chiffré</span>
         </div>
-        <div class="db-summary-row">
-            <span class="db-summary-label">Cash</span>
-            <span class="db-summary-value">{money_dollar(cash_balance)}</span>
-        </div>
-        <div class="db-summary-row">
-            <span class="db-summary-label">Positions</span>
-            <span class="db-summary-value">{nb_positions}</span>
-        </div>
-        <div class="db-summary-row">
-            <span class="db-summary-label">Ordres simulés</span>
-            <span class="db-summary-value">{nb_orders}</span>
-        </div>
+
+        <div class="summary-line"><span>Valeur totale</span><b>{money_dollar(total_portfolio)}</b></div>
+        <div class="summary-line"><span>Cash</span><b>{money_dollar(cash_balance)}</b></div>
+        <div class="summary-line"><span>Positions</span><b>{nb_positions}</b></div>
+        <div class="summary-line"><span>Ordres simulés</span><b>{nb_orders}</b></div>
     </div>
     """)
 
-    # Actions rapides
-    html("""<div class="db-card"><div class="db-card-title">Actions rapides</div></div>""")
+    html("""
+    <div class="section-card">
+        <div class="section-title">
+            <span class="section-icon bolt"></span>
+            <span>Actions rapides</span>
+        </div>
+    </div>
+    """)
 
     if st.button("Analyser mon profil", use_container_width=True, type="primary", key="analyser_profil_app"):
         st.switch_page("pages/analyse.py")
+
     if st.button("Gérer mon portefeuille", use_container_width=True, key="gerer_portefeuille_app"):
         st.switch_page("pages/portefeuille.py")
+
     if st.button("Voir l'historique", use_container_width=True, key="voir_historique_app"):
         st.switch_page("pages/historique.py")
+
+    html("""
+    <div class="section-card">
+        <div style="color:#0C2446;font-weight:900;margin-bottom:.35rem;">Rôle de cette page</div>
+        <div style="color:#64748B;line-height:1.55;font-size:.92rem;">
+            Cette page sert à guider l’utilisateur. Les détails d’achat, de vente,
+            de secteurs et d’ordres restent dans la page Portefeuille.
+        </div>
+    </div>
+    """)
