@@ -1430,7 +1430,7 @@ def render_auth_screen():
         render_left_panel(logo_b64)
 
     with right:
-        with st.container(border=True):
+        with st.container():
             html("""
 <div class="login-top-label">
     <span class="login-lock-icon"></span>
