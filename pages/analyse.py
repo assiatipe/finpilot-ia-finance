@@ -1916,6 +1916,7 @@ if not st.session_state.analysis_done:
                     user_id,
                     profile,
                     score,
+                    recommendations,
                     "",
                     f"Score: {score}/55 | Secteurs: {', '.join(selected_sectors) if selected_sectors else 'Aucune préférence'}",
                 )
