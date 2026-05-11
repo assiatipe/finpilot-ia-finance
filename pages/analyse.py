@@ -2013,7 +2013,6 @@ if st.session_state.analysis_done and st.session_state.show_mcda:
                 profile,
                 score,
                 recommendations_text,
-                "",
                 analysis_notes,
             )
             st.session_state.last_saved_analysis_signature = current_signature

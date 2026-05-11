@@ -45,6 +45,7 @@ def init_db():
     _add_column_if_missing(c, "users", "initial_capital", "REAL DEFAULT NULL")
     _add_column_if_missing(c, "users", "capital_configured", "INTEGER DEFAULT 0")
     _add_column_if_missing(c, "users", "is_admin", "INTEGER DEFAULT 0")
+    _add_column_if_missing(c, "users", "profile", "TEXT DEFAULT 'Modéré'")
 
     c.execute("""CREATE TABLE IF NOT EXISTS portfolio (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,6 +57,9 @@ def init_db():
         FOREIGN KEY (user_id) REFERENCES users(id),
         UNIQUE(user_id, ticker)
     )""")
+
+    _add_column_if_missing(c, "portfolio", "company_name", "TEXT DEFAULT ''")
+    _add_column_if_missing(c, "portfolio", "avg_buy_price", "REAL DEFAULT 0")
 
     c.execute("""CREATE TABLE IF NOT EXISTS orders (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -70,6 +74,10 @@ def init_db():
         FOREIGN KEY (user_id) REFERENCES users(id)
     )""")
 
+    _add_column_if_missing(c, "orders", "order_type", "TEXT DEFAULT 'BUY'")
+    _add_column_if_missing(c, "orders", "total", "REAL DEFAULT 0")
+    _add_column_if_missing(c, "orders", "cash_after", "REAL DEFAULT 0")
+
     c.execute("""CREATE TABLE IF NOT EXISTS analyses (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
@@ -80,6 +88,9 @@ def init_db():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id)
     )""")
+
+    _add_column_if_missing(c, "analyses", "recommended_tickers", "TEXT")
+    _add_column_if_missing(c, "analyses", "notes", "TEXT")
 
     c.execute("""CREATE TABLE IF NOT EXISTS watchlist (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -294,11 +305,27 @@ def get_user_orders(user_id):
     return result
 
 
-def save_analysis(user_id, profil, score, recommended_tickers, notes=""):
+def save_analysis(user_id, profil, score, recommended_tickers="", notes=""):
+    """
+    Sauvegarde une analyse IA dans l'historique.
+
+    Paramètres attendus :
+    - user_id : identifiant utilisateur
+    - profil : Prudent / Modéré / Dynamique
+    - score : score du questionnaire
+    - recommended_tickers : texte ou liste des tickers recommandés
+    - notes : détails complémentaires affichables dans l'historique
+    """
+    if isinstance(recommended_tickers, (list, tuple, set)):
+        recommended_tickers = ", ".join(str(t).strip() for t in recommended_tickers if str(t).strip())
+
+    recommended_tickers = str(recommended_tickers or "").strip()
+    notes = str(notes or "").strip()
+
     conn = get_db_connection()
     conn.execute(
         "INSERT INTO analyses (user_id, profil, score, recommended_tickers, notes) VALUES (?, ?, ?, ?, ?)",
-        (user_id, profil, score, recommended_tickers, notes)
+        (user_id, profil, int(score), recommended_tickers, notes)
     )
     conn.execute("UPDATE users SET profile = ? WHERE id = ?", (profil, user_id))
     conn.commit()
