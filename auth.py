@@ -20,31 +20,17 @@ SESSION_FILE = os.path.join(os.path.dirname(__file__), ".finpilot_session")
 # 2) Crée un identifiant OAuth 2.0 de type "Application Web".
 # 3) Ajoute exactement cette URL dans "Authorized redirect URIs" :
 #       http://localhost:8502
-#       https://finpilot-ia-finance-diobwwpufzjtihzw8awvy5.streamlit.app
-# 4) Mets les secrets dans .streamlit/secrets.toml ou Streamlit Cloud Secrets :
+# 4) Mets ton client_id et ton client_secret dans .streamlit/secrets.toml :
 #
 # [google_oauth]
 # client_id = "TON_CLIENT_ID"
 # client_secret = "TON_CLIENT_SECRET"
-# redirect_uri = "https://finpilot-ia-finance-diobwwpufzjtihzw8awvy5.streamlit.app"
 #
 # Le bouton Google ouvrira le choix du compte, puis Google reviendra
-# automatiquement vers l’URL redirect_uri avec ?code=...
+# automatiquement vers http://localhost:8502?code=...
 # Ensuite l'app valide le compte et connecte l'utilisateur.
 
-DEFAULT_GOOGLE_REDIRECT_URI = "http://localhost:8502"
-
-
-def get_google_redirect_uri():
-    """Retourne l'URL de redirection OAuth selon l'environnement.
-
-    En local : http://localhost:8502
-    Sur Streamlit Cloud : valeur définie dans st.secrets["google_oauth"]["redirect_uri"]
-    """
-    try:
-        return st.secrets["google_oauth"].get("redirect_uri", DEFAULT_GOOGLE_REDIRECT_URI)
-    except Exception:
-        return os.getenv("GOOGLE_REDIRECT_URI", DEFAULT_GOOGLE_REDIRECT_URI)
+GOOGLE_REDIRECT_URI = "http://localhost:8502"
 GOOGLE_AUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
 GOOGLE_USERINFO_ENDPOINT = "https://openidconnect.googleapis.com/v1/userinfo"
@@ -62,6 +48,33 @@ def get_google_client_secret():
         return st.secrets["google_oauth"]["client_secret"]
     except Exception:
         return os.getenv("GOOGLE_CLIENT_SECRET", "")
+
+
+def get_google_redirect_uri():
+    """
+    URL de redirection OAuth utilisée par Google.
+
+    En local : http://localhost:8502
+    Sur Streamlit Cloud : valeur définie dans Settings > Secrets :
+        [google_oauth]
+        redirect_uri = "https://votre-app.streamlit.app"
+    """
+    try:
+        uri = st.secrets["google_oauth"].get("redirect_uri", "")
+        if uri:
+            return str(uri).strip().rstrip("/")
+    except Exception:
+        pass
+
+    return os.getenv("GOOGLE_REDIRECT_URI", GOOGLE_REDIRECT_URI).strip().rstrip("/")
+
+
+def oauth_debug_enabled():
+    """
+    Debug temporaire pour vérifier la configuration Google OAuth.
+    Mets False après correction si tu ne veux plus afficher ces informations.
+    """
+    return True
 
 
 # ============================================================
@@ -117,50 +130,6 @@ def get_query_param(name: str):
             return None
 
 
-
-def set_query_uid(user_id):
-    """Ajoute uid dans l'URL quand Streamlit le permet."""
-    try:
-        st.query_params["uid"] = str(user_id)
-    except Exception:
-        try:
-            st.experimental_set_query_params(uid=str(user_id))
-        except Exception:
-            pass
-
-
-def persist_user_session(user_id):
-    """Sauvegarde locale du dernier utilisateur connecté pour restaurer après reload.
-
-    Cette persistance est adaptée à un prototype Streamlit pédagogique local.
-    Pour une application de production, il faut remplacer cela par une vraie session sécurisée.
-    """
-    try:
-        with open(SESSION_FILE, "w", encoding="utf-8") as f:
-            f.write(str(user_id))
-    except Exception:
-        pass
-
-
-def read_persisted_user_id():
-    try:
-        if not os.path.exists(SESSION_FILE):
-            return None
-        with open(SESSION_FILE, "r", encoding="utf-8") as f:
-            value = f.read().strip()
-        return int(value) if value.isdigit() else None
-    except Exception:
-        return None
-
-
-def clear_persisted_user_session():
-    try:
-        if os.path.exists(SESSION_FILE):
-            os.remove(SESSION_FILE)
-    except Exception:
-        pass
-
-
 # ============================================================
 # BASE DE DONNÉES UTILISATEURS
 # ============================================================
@@ -198,29 +167,6 @@ def get_user_by_email_or_username(identifier: str):
         LIMIT 1
         """,
         (identifier, identifier),
-    )
-
-    row = cur.fetchone()
-    conn.close()
-
-    return dict(row) if row else None
-
-
-def get_user_by_id(user_id: int):
-    ensure_users_table()
-
-    conn = get_connection()
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-
-    cur.execute(
-        """
-        SELECT *
-        FROM users
-        WHERE id = ?
-        LIMIT 1
-        """,
-        (user_id,),
     )
 
     row = cur.fetchone()
@@ -335,7 +281,6 @@ def init_auth_state():
         "logged_in": False,
         "user_id": None,
         "username": None,
-        "user_name": None,
         "email": None,
         "oauth_state": None,
     }
@@ -344,47 +289,20 @@ def init_auth_state():
         if key not in st.session_state:
             st.session_state[key] = value
 
-    # Restauration après reload :
-    # 1) uid dans l'URL si présent
-    # 2) sinon fichier local .finpilot_session
-    if not st.session_state.get("logged_in"):
-        uid = get_query_param("uid")
 
-        if uid is None:
-            uid = read_persisted_user_id()
-
-        if uid:
-            try:
-                user = get_user_by_id(int(uid))
-                if user:
-                    login_user(user, update_url=True)
-            except Exception:
-                pass
-
-
-def login_user(user: dict, update_url: bool = True):
+def login_user(user: dict):
     st.session_state.logged_in = True
     st.session_state.user_id = user.get("id")
     st.session_state.username = user.get("username")
-    st.session_state.user_name = user.get("username")
     st.session_state.email = user.get("email")
-
-    if user.get("id") is not None:
-        persist_user_session(user.get("id"))
-        if update_url:
-            set_query_uid(user.get("id"))
 
 
 def logout():
     st.session_state.logged_in = False
     st.session_state.user_id = None
     st.session_state.username = None
-    st.session_state.user_name = None
     st.session_state.email = None
     st.session_state.oauth_state = None
-
-    clear_persisted_user_session()
-    clear_url_params()
 
 
 # ============================================================
@@ -485,8 +403,9 @@ def handle_google_callback():
             raise RuntimeError("Google n'a pas retourné d'adresse email.")
 
         user = create_or_get_google_user(email=email, name=name)
-        login_user(user, update_url=True)
+        login_user(user)
 
+        clear_url_params()
         st.success("Connexion Google réussie.")
         st.rerun()
 
@@ -1532,6 +1451,7 @@ def render_auth_screen():
     google_client_id = get_google_client_id()
     google_client_secret = get_google_client_secret()
     google_auth_url = build_google_auth_url()
+    google_redirect_uri = get_google_redirect_uri()
 
     left, right = st.columns([1.75, 1.05], gap="large")
 
@@ -1603,6 +1523,10 @@ def render_auth_screen():
                 html("""
 <div class="or-line">OU</div>
 """)
+
+                if oauth_debug_enabled():
+                    st.info(f"Google redirect URI utilisé : {google_redirect_uri}")
+                    st.info(f"Google client ID utilisé : {google_client_id if google_client_id else 'NON CONFIGURÉ'}")
 
                 if google_client_id and google_client_secret:
                     html(f"""
