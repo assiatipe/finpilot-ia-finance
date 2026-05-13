@@ -279,7 +279,17 @@ html(
     """
     <style>
         .block-container {
-            padding-top: 1.2rem !important;
+            max-width: 1500px !important;
+            padding-top: 0 !important;
+            padding-left: 2.2rem !important;
+            padding-right: 2.2rem !important;
+            padding-bottom: 3rem !important;
+        }
+
+        [data-testid="stAppViewContainer"] > .main,
+        section.main > div,
+        div.block-container {
+            padding-top: 0 !important;
         }
 
         .history-hero {

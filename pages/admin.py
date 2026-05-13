@@ -26,7 +26,7 @@ from sidebar_ui import render_sidebar
 # ============================================================
 
 st.set_page_config(
-    page_title="FinPilot · Admin",
+    page_title="FinPilot · Administration",
     page_icon="assets/finpilot_logo_final.png",
     layout="wide",
 )
@@ -56,6 +56,16 @@ render_sidebar(active_page="admin", cash_balance=cash_balance, logout_callback=l
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@700;800;900&family=Inter:wght@400;500;600;700;800&display=swap');
+
+.block-container {
+    padding-top: 0.8rem !important;
+    padding-bottom: 3rem !important;
+}
+
+[data-testid="stSidebarNav"] {
+    display: none !important;
+    visibility: hidden !important;
+}
 
 .adm-hero {
     position: relative;
@@ -236,11 +246,11 @@ def fmt_date(d):
 
 st.markdown(f"""
 <div class="adm-hero">
-    <div class="adm-hero-label">⚙ Espace Administration</div>
-    <div class="adm-hero-title">Tableau de bord Admin</div>
+    <div class="adm-hero-label">Espace Administration</div>
+    <div class="adm-hero-title">Pilotage de la plateforme</div>
     <div class="adm-hero-sub">
         Connecté en tant que <b>{st.session_state.get('user_name', 'Admin')}</b> ·
-        Supervision complète de la plateforme FinPilot.
+        Supervision des utilisateurs, des analyses IA, des ordres simulés et des avis clients.
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -342,10 +352,15 @@ with tab_users:
     </div>
     """, unsafe_allow_html=True)
 
-    user_options = {f"{u['username']} ({u['email']})": u["id"] for u in all_users}
+    user_options = {f"{u.get('username', 'Utilisateur')} ({u.get('email', '—')})": u.get("id") for u in all_users if u.get("id") is not None}
+
+    if not user_options:
+        st.info("Aucun utilisateur disponible pour le moment.")
+        st.stop()
+
     selected_label = st.selectbox("Choisir un utilisateur", options=list(user_options.keys()), index=0)
     selected_uid = user_options[selected_label]
-    selected_user = next(u for u in all_users if u["id"] == selected_uid)
+    selected_user = next(u for u in all_users if u.get("id") == selected_uid)
 
     col_info, col_actions = st.columns([2, 1], gap="large")
 
@@ -396,7 +411,7 @@ with tab_users:
                     st.markdown(f"""
                     <div style="padding:.55rem 0;border-bottom:1px solid #EEF4FF;">
                         {profile_pill(a.get('profil','Modéré'))}
-                        · Score : <b>{a.get('score','—')}/100</b>
+                        · Score : <b>{a.get('score','—')}/55</b>
                         · Actions : <b>{tickers}</b>
                         <span style="color:#94A3B8;font-size:.82rem;float:right;">{fmt_date(a.get('created_at'))}</span>
                     </div>

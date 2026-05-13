@@ -1,7 +1,7 @@
 def load_global_styles():
     return """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
     --bg-main: #F6F9FF;
@@ -27,64 +27,54 @@ def load_global_styles():
     --radius: 22px;
 }
 
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-.stApp {
-    background: linear-gradient(180deg, var(--bg-main) 0%, var(--bg-soft) 100%) !important;
-    color: var(--text-main) !important;
+html, body, .stApp {
     font-family: 'DM Sans', sans-serif !important;
 }
 
+.stApp {
+    background:
+        radial-gradient(circle at 7% 0%, rgba(47,124,255,.11), transparent 28%),
+        radial-gradient(circle at 95% 4%, rgba(49,230,168,.13), transparent 28%),
+        linear-gradient(180deg, var(--bg-main) 0%, var(--bg-soft) 100%) !important;
+    color: var(--text-main) !important;
+}
+
 .main .block-container {
-    padding: 2rem 2.2rem !important;
-    max-width: 1380px !important;
+    padding: 0rem 2.2rem 2rem 2.2rem !important;
+    max-width: 1500px !important;
 }
 
-/* On cache seulement le menu et le footer.
-   NE PAS cacher header, sinon le bouton natif de sidebar peut disparaître. */
+/* Hide only Streamlit technical UI */
 #MainMenu,
-footer {
-    visibility: hidden !important;
-}
-
+footer,
 [data-testid="stToolbar"],
 [data-testid="stDecoration"],
 [data-testid="stStatusWidget"],
-.stDeployButton {
+.stDeployButton,
+[data-testid="stSidebarNav"] {
     display: none !important;
+    visibility: hidden !important;
+}
+
+[data-testid="stAppViewContainer"] {
+    overflow-x: hidden !important;
 }
 
 /* ============================================================
-   SIDEBAR — VERSION FIABLE
-   La sidebar reste visible sur toutes les pages.
-   Le bouton de fermeture reste affiché.
+   SIDEBAR — panneau secondaire, pas menu principal
+   Le style détaillé de la sidebar est défini dans sidebar_ui.py.
+   Ici on évite de forcer la largeur / l'affichage pour ne pas casser la top nav.
    ============================================================ */
 
-[data-testid="stSidebarNav"] {
-    display: none !important;
-}
-
 section[data-testid="stSidebar"] {
-    display: block !important;
-    visibility: visible !important;
-    transform: translateX(0px) !important;
-    min-width: 290px !important;
-    width: 290px !important;
-    background: linear-gradient(180deg, var(--bg-sidebar) 0%, var(--bg-sidebar-2) 100%) !important;
+    background:
+        radial-gradient(circle at 20% 5%, rgba(47,124,255,.20), transparent 26%),
+        radial-gradient(circle at 85% 92%, rgba(39,224,179,.10), transparent 28%),
+        linear-gradient(180deg, var(--bg-sidebar) 0%, var(--bg-sidebar-2) 100%) !important;
     border-right: 1px solid rgba(255,255,255,0.08) !important;
-    z-index: 9999 !important;
-}
-
-section[data-testid="stSidebar"] > div {
-    display: block !important;
-    visibility: visible !important;
-}
-
-[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, var(--bg-sidebar) 0%, var(--bg-sidebar-2) 100%) !important;
-    border-right: 1px solid rgba(255,255,255,0.08) !important;
+    box-shadow: 14px 0 46px rgba(6,22,51,.16);
 }
 
 [data-testid="stSidebar"] * {
@@ -92,100 +82,42 @@ section[data-testid="stSidebar"] > div {
 }
 
 [data-testid="stSidebar"] > div:first-child {
-    padding: 1.4rem 1rem !important;
+    padding: 1.2rem .95rem !important;
 }
 
-/* Bouton de fermeture de la sidebar */
-button[data-testid="stSidebarCollapseButton"] {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    z-index: 999999 !important;
-}
-
-/* Bouton de réouverture si Streamlit le crée malgré tout */
+/* Bouton natif pour fermer/ouvrir la sidebar : on le garde visible */
+button[data-testid="stSidebarCollapseButton"],
 [data-testid="collapsedControl"],
 button[data-testid="collapsedControl"],
 [data-testid="stSidebarCollapsedControl"],
 button[data-testid="stSidebarCollapsedControl"] {
-    display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
     pointer-events: auto !important;
-    position: fixed !important;
-    top: 92px !important;
-    left: 14px !important;
-    z-index: 999999 !important;
-    width: 46px !important;
-    height: 46px !important;
-    border-radius: 15px !important;
-    background: linear-gradient(135deg, #2F7CFF, #6C63FF) !important;
-    border: 1px solid rgba(255,255,255,0.30) !important;
-    box-shadow: 0 12px 28px rgba(47,124,255,0.30) !important;
 }
 
-[data-testid="collapsedControl"] svg,
-button[data-testid="collapsedControl"] svg,
-[data-testid="stSidebarCollapsedControl"] svg,
-button[data-testid="stSidebarCollapsedControl"] svg {
-    color: #FFFFFF !important;
-    fill: #FFFFFF !important;
-    stroke: #FFFFFF !important;
-    width: 22px !important;
-    height: 22px !important;
-}
+/* ============================================================
+   BUTTONS
+   ============================================================ */
 
-[data-testid="stAppViewContainer"] {
-    overflow-x: hidden !important;
-}
-
-/* SIDEBAR BRAND */
-.sidebar-brand-wrap {
-    padding: 1rem 0 1.1rem 0;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    margin-bottom: 1rem;
-}
-
-.sidebar-logo-name {
-    font-family: 'Sora', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #FFFFFF;
-}
-
-.sidebar-logo-sub {
-    font-size: 0.82rem;
-    color: #C6D7F2 !important;
-    margin-top: 0.1rem;
-}
-
-.fp-logo-box {
-    width: 38px;
-    height: 38px;
-    border-radius: 11px;
-    background: linear-gradient(135deg, #2F7CFF, #31E6A8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 800;
-    font-size: 0.78rem;
-    font-family: 'Sora', sans-serif;
-}
-
-/* BUTTONS */
 .stButton > button {
     height: 52px !important;
     border-radius: 14px !important;
     font-size: 0.98rem !important;
     font-weight: 800 !important;
-    border: none !important;
-    box-shadow: 0 6px 18px rgba(47,124,255,0.18) !important;
+    border: 1px solid #D9E5F4 !important;
+    box-shadow: 0 6px 18px rgba(47,124,255,0.12) !important;
+    transition: all .18s ease !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-1px);
 }
 
 .stButton > button[kind="primary"] {
     background: linear-gradient(135deg, #2F7CFF, #7A5CFF) !important;
     color: #FFFFFF !important;
+    border: none !important;
 }
 
 .stButton > button[kind="secondary"] {
@@ -193,20 +125,29 @@ button[data-testid="stSidebarCollapsedControl"] svg {
     color: #204A7A !important;
 }
 
-/* SIDEBAR BUTTONS */
+/* Boutons dans la sidebar : plus sobres */
 [data-testid="stSidebar"] .stButton > button {
-    background: linear-gradient(135deg, #2F7CFF, #7A5CFF) !important;
+    background: rgba(255,255,255,0.08) !important;
     color: white !important;
     box-shadow: none !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+[data-testid="stSidebar"] .stButton > button[kind="primary"] {
+    background: linear-gradient(90deg,#2F7CFF,#7A5CFF) !important;
+    color: white !important;
+    box-shadow: 0 12px 26px rgba(47,124,255,.22) !important;
 }
 
 [data-testid="stSidebar"] .stButton > button[kind="secondary"] {
     background: rgba(255,255,255,0.08) !important;
     color: #F5F8FF !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
 }
 
-/* GLOBAL TYPOGRAPHY */
+/* ============================================================
+   GLOBAL TYPOGRAPHY
+   ============================================================ */
+
 .fp-page-label {
     color: var(--blue);
     font-size: 0.88rem;
@@ -233,7 +174,10 @@ button[data-testid="stSidebarCollapsedControl"] svg {
     margin-bottom: 1.6rem;
 }
 
-/* CARDS */
+/* ============================================================
+   CARDS
+   ============================================================ */
+
 .fp-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -299,19 +243,14 @@ button[data-testid="stSidebarCollapsedControl"] svg {
     margin-top: 0.45rem;
 }
 
-.fp-positive {
-    color: var(--green) !important;
-}
+.fp-positive { color: var(--green) !important; }
+.fp-negative { color: var(--red) !important; }
+.fp-neutral { color: var(--blue) !important; }
 
-.fp-negative {
-    color: var(--red) !important;
-}
+/* ============================================================
+   TABLE LIKE CARDS
+   ============================================================ */
 
-.fp-neutral {
-    color: var(--blue) !important;
-}
-
-/* TABLE LIKE CARDS */
 .fp-table {
     background: #FFFFFF;
     border: 1px solid var(--border);
@@ -338,9 +277,7 @@ button[data-testid="stSidebarCollapsedControl"] svg {
     gap: 0.8rem;
 }
 
-.fp-row:last-child {
-    border-bottom: none;
-}
+.fp-row:last-child { border-bottom: none; }
 
 .fp-row-header {
     background: #F4F8FF;
@@ -397,10 +334,14 @@ button[data-testid="stSidebarCollapsedControl"] svg {
     border: 1px solid #F6DEAA;
 }
 
-/* FORMS */
+/* ============================================================
+   FORMS
+   ============================================================ */
+
 .stTextInput > div > div,
 .stNumberInput > div > div,
-.stSelectbox > div > div {
+.stSelectbox > div > div,
+.stTextArea > div > div {
     background: #FFFFFF !important;
     border: 1px solid #DCE7F8 !important;
     border-radius: 14px !important;
@@ -409,13 +350,17 @@ button[data-testid="stSidebarCollapsedControl"] svg {
 
 .stTextInput label,
 .stNumberInput label,
-.stSelectbox label {
+.stSelectbox label,
+.stTextArea label {
     color: #10233F !important;
     font-size: 0.95rem !important;
     font-weight: 800 !important;
 }
 
-/* DATAFRAMES */
+/* ============================================================
+   DATAFRAMES / TABS / CHARTS
+   ============================================================ */
+
 [data-testid="stDataFrame"] {
     background: #FFFFFF !important;
     border-radius: 18px !important;
@@ -423,7 +368,6 @@ button[data-testid="stSidebarCollapsedControl"] svg {
     overflow: hidden !important;
 }
 
-/* TABS */
 .stTabs [data-baseweb="tab-list"] {
     gap: 0.4rem;
     background: transparent;
@@ -450,23 +394,28 @@ button[data-testid="stSidebarCollapsedControl"] svg {
     border-radius: 22px;
 }
 
-/* SCROLLBAR */
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
 ::-webkit-scrollbar {
     width: 7px;
     height: 7px;
 }
 
-::-webkit-scrollbar-track {
-    background: transparent;
-}
+::-webkit-scrollbar-track { background: transparent; }
 
 ::-webkit-scrollbar-thumb {
     background: #C8D7ED;
     border-radius: 99px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #9FB5D4;
+::-webkit-scrollbar-thumb:hover { background: #9FB5D4; }
+
+@media (max-width: 900px) {
+    .main .block-container {
+        padding: 0rem 1rem 2rem 1rem !important;
+    }
 }
 </style>
 """

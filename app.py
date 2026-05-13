@@ -22,7 +22,7 @@ from utils import get_history_summary, get_risk_score
 # ============================================================
 
 st.set_page_config(
-    page_title="FinPilot",
+    page_title="FinPilot · Accueil",
     page_icon="assets/finpilot_logo_final.png",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -418,7 +418,7 @@ def render_capital_setup(user_id):
 
 
 # ============================================================
-# STYLE TABLEAU DE BORD PREMIUM
+# STYLE ACCUEIL PREMIUM
 # ============================================================
 
 def inject_dashboard_style():
@@ -1828,10 +1828,10 @@ html(f"""
         <div class="schema-wave"></div>
     </div>
 
-    <h1>Bienvenue sur FinPilot</h1>
+    <h1>Accueil FinPilot</h1>
     <p>
-        Votre tableau de bord synthétise votre situation financière et l'activité IA.
-        Obtenez une vue d'ensemble claire et des actions recommandées pour avancer.
+        FinPilot est un copilote intelligent d’aide à la décision financière.
+        Cette page d’accueil résume votre profil, votre portefeuille simulé et les prochaines actions à réaliser.
     </p>
     <div class="hero-badges">
         <div class="hero-badge">Profil : {profil}</div>
@@ -1842,6 +1842,25 @@ html(f"""
 </div>
 """)
 
+
+
+# ============================================================
+# INTRO ACCUEIL
+# ============================================================
+
+html("""
+<div class="section-card" style="margin-top:.2rem;">
+    <div class="section-title">
+        <span class="section-icon spark"></span>
+        <span>Bienvenue dans votre espace de simulation</span>
+    </div>
+    <div class="quick-text">
+        FinPilot combine un questionnaire investisseur, une analyse multicritère MCDA
+        et une simulation de portefeuille. Aucune transaction réelle n’est effectuée :
+        l’objectif est d’aider l’utilisateur à comprendre avant d’investir.
+    </div>
+</div>
+""")
 
 # ============================================================
 # KPI
@@ -1927,7 +1946,7 @@ with left:
     <div class="section-card">
         <div class="section-title">
             <span class="section-icon wallet"></span>
-            <span>État global du portefeuille</span>
+            <span>État global du portefeuille simulé</span>
         </div>
 
         <div class="status-grid">
@@ -2062,21 +2081,21 @@ with right:
     </div>
     """)
 
-    if st.button("Analyser mon profil", use_container_width=True, type="primary", key="analyser_profil_app"):
+    if st.button("Commencer l’analyse IA", use_container_width=True, type="primary", key="analyser_profil_app"):
         st.switch_page("pages/analyse.py")
 
-    if st.button("Gérer mon portefeuille", use_container_width=True, key="gerer_portefeuille_app"):
+    if st.button("Voir le portefeuille", use_container_width=True, key="gerer_portefeuille_app"):
         st.switch_page("pages/portefeuille.py")
 
-    if st.button("Voir l'historique", use_container_width=True, key="voir_historique_app"):
+    if st.button("Consulter l’historique", use_container_width=True, key="voir_historique_app"):
         st.switch_page("pages/historique.py")
 
     html("""
     <div class="section-card">
-        <div style="color:#0C2446;font-weight:900;margin-bottom:.35rem;">Rôle de cette page</div>
+        <div style="color:#0C2446;font-weight:900;margin-bottom:.35rem;">Rôle de l’accueil</div>
         <div style="color:#64748B;line-height:1.55;font-size:.92rem;">
-            Cette page sert à guider l’utilisateur. Les détails d’achat, de vente,
-            de secteurs et d’ordres restent dans la page Portefeuille.
+            Cette page sert de point d’entrée : elle présente l’état global du compte,
+            oriente l’utilisateur vers l’analyse IA et rappelle que les opérations restent simulées.
         </div>
     </div>
     """)

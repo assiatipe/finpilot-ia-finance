@@ -25,7 +25,7 @@ from sidebar_ui import render_sidebar
 # ============================================================
 
 st.set_page_config(
-    page_title="FinPilot · Analyse investisseur",
+    page_title="FinPilot · Analyse IA",
     page_icon="assets/finpilot_logo_final.png",
     layout="wide",
 )
@@ -33,6 +33,24 @@ st.set_page_config(
 init_db()
 init_auth_state()
 st.markdown(load_global_styles(), unsafe_allow_html=True)
+
+st.markdown(
+    """
+    <style>
+    /* Compatibilité avec la nouvelle navigation horizontale */
+    .main .block-container {
+        padding-top: 0 !important;
+        max-width: 1500px !important;
+    }
+    [data-testid="stSidebarNav"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 
 if not st.session_state.logged_in:
     st.switch_page("app.py")
@@ -1726,12 +1744,12 @@ render_sidebar(
 # Barre premium bleu sombre en haut
 try:
     render_top_blue_bar(
-        cash_available=capital if "capital" in globals() else None,
+        cash_available=cash_balance,
         universe_count=len(actions_df) if "actions_df" in globals() else 30,
         sector_count=len(sectors) if "sectors" in globals() else 6,
     )
 except Exception:
-    render_top_blue_bar()
+    render_top_blue_bar(cash_available=cash_balance)
 
 st.markdown(
     """

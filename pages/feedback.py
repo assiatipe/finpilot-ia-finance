@@ -23,7 +23,7 @@ from sidebar_ui import render_sidebar
 # ============================================================
 
 st.set_page_config(
-    page_title="FinPilot · Avis",
+    page_title="FinPilot · Avis clients",
     page_icon="assets/finpilot_logo_final.png",
     layout="wide",
 )
@@ -54,11 +54,16 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@700;800;900&family=Inter:wght@400;500;600;700;800&display=swap');
 
+.block-container {
+    padding-top: 0.7rem !important;
+    padding-bottom: 3rem !important;
+}
+
 .fb-hero {
     position: relative;
     overflow: hidden;
     padding: 2.2rem 2.5rem;
-    border-radius: 28px;
+    border-radius: 0 0 30px 30px;
     color: white;
     background:
         radial-gradient(circle at 90% 20%, rgba(122,92,255,.55), transparent 25%),
@@ -286,10 +291,10 @@ def rating_color(n: int) -> str:
 st.markdown("""
 <div class="fb-hero">
     <div class="fb-hero-label">✦ Votre opinion compte</div>
-    <div class="fb-hero-title">Partagez votre expérience</div>
+    <div class="fb-hero-title">Avis clients et retours utilisateurs</div>
     <div class="fb-hero-sub">
-        Après votre simulation, dites-nous ce que vous en pensez.
-        Vos retours nous aident à améliorer FinPilot pour tous les investisseurs.
+        Après votre simulation, partagez votre ressenti sur la clarté, la simplicité et l’utilité des recommandations.
+        Ces retours permettent de valider le prototype et d’améliorer l’expérience utilisateur.
     </div>
 </div>
 """, unsafe_allow_html=True)

@@ -1,7 +1,7 @@
 import sqlite3
 import os
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "finpilot.db")
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "finpilot.db")
 
 
 def get_db_connection():
@@ -32,7 +32,7 @@ def init_db():
 
     c.execute("""CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL,
+        username TEXT UNIQUE NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password_hash TEXT NOT NULL,
         cash_balance REAL DEFAULT NULL,
@@ -111,6 +111,13 @@ def init_db():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id)
     )""")
+
+    _add_column_if_missing(c, "feedbacks", "category", "TEXT DEFAULT 'Général'")
+    _add_column_if_missing(c, "feedbacks", "message", "TEXT DEFAULT ''")
+    _add_column_if_missing(c, "feedbacks", "created_at", "TEXT")
+    _add_column_if_missing(c, "orders", "created_at", "TEXT")
+    _add_column_if_missing(c, "analyses", "created_at", "TEXT")
+    _add_column_if_missing(c, "users", "cash_balance", "REAL DEFAULT NULL")
 
     conn.commit()
     conn.close()

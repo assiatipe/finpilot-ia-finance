@@ -23,7 +23,7 @@ from utils import get_history_summary, get_risk_score
 # ============================================================
 
 st.set_page_config(
-    page_title="FinPilot · Profil",
+    page_title="FinPilot · Profil investisseur",
     page_icon="assets/finpilot_logo_final.png",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -34,7 +34,7 @@ init_auth_state()
 st.markdown(load_global_styles(), unsafe_allow_html=True)
 
 if not st.session_state.logged_in:
-    render_auth_screen()
+    st.switch_page("app.py")
     st.stop()
 
 
@@ -159,6 +159,16 @@ html(
             display: none !important;
         }
 
+        /* Compatibilité avec la navigation horizontale commune */
+        .fp-top-nav-wrap {
+            position: sticky;
+            top: 0;
+            z-index: 9998;
+        }
+
+        .main .block-container {
+            padding-top: 0.4rem !important;
+        }
 
         /* Keep Streamlit's native sidebar buttons visible */
         button[data-testid="stSidebarCollapseButton"] {
@@ -213,7 +223,7 @@ html(
 
         .block-container {
             max-width: 1760px !important;
-            padding-top: 1.7rem !important;
+            padding-top: 0.4rem !important;
             padding-bottom: 3rem !important;
             padding-left: 2.2rem !important;
             padding-right: 2.2rem !important;
@@ -672,11 +682,11 @@ render_sidebar(
 html(
     f"""
     <div class="profile-hero">
-        <div class="hero-label">Compte utilisateur</div>
-        <div class="hero-title">Mon profil FinPilot</div>
+        <div class="hero-label">Profil investisseur</div>
+        <div class="hero-title">Profil investisseur</div>
         <div class="hero-text">
             Consultez votre identité de compte, votre profil investisseur, votre capital de simulation
-            et vos statistiques d’utilisation.
+            et vos statistiques d’utilisation dans FinPilot.
         </div>
         <div class="hero-chip-row">
             <div class="hero-chip">Profil : {profil}</div>

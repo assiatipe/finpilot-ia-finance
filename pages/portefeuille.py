@@ -14,6 +14,7 @@ from database import (
     add_order,
     upsert_portfolio_position,
     update_cash_balance,
+    get_user_initial_capital,
 )
 from styles import load_global_styles
 from sidebar_ui import render_sidebar
@@ -1193,15 +1194,17 @@ positions = get_portfolio_positions(user_id)
 orders = get_user_orders(user_id)
 
 real_position_map = get_real_position_map(positions)
-has_real_positions = len([p for p in positions if p[2] > 0]) > 0
 
-if has_real_positions:
-    position_rows, invested_value, real_price_count = build_position_rows(positions)
-    using_demo_data = False
-else:
-    position_rows, invested_value = build_demo_positions()
-    real_price_count = 0
-    using_demo_data = True
+# Données réelles de l'utilisateur uniquement.
+# Ancienne logique supprimée : on n'affiche plus de positions de démonstration
+# lorsqu'un utilisateur n'a encore passé aucun ordre.
+position_rows, invested_value, real_price_count = build_position_rows(positions)
+using_demo_data = False
+
+try:
+    initial_capital = float(get_user_initial_capital(user_id) or cash_balance or 0)
+except Exception:
+    initial_capital = float(cash_balance or 0)
 
 total_portfolio = cash_balance + invested_value
 global_pnl = sum((r["current"] - r["avg"]) * r["qty"] for r in position_rows)
@@ -1268,21 +1271,12 @@ hero_html = f"""
 hero_html = "\n".join(line.strip() for line in hero_html.strip().splitlines())
 st.markdown(hero_html, unsafe_allow_html=True)
 
-if using_demo_data:
-    st.markdown(
-        """
-        <div class="portfolio-alert">
-            <b>Données de démonstration :</b> aucune position réelle n’est enregistrée. Les positions ci-dessous illustrent le fonctionnement.
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-else:
+if position_rows:
     if real_price_count > 0:
         st.markdown(
             f"""
             <div class="portfolio-good">
-                <b>Portefeuille réel :</b> {real_price_count} prix de marché récupéré(s). Les autres prix peuvent être estimés.
+                <b>Portefeuille simulé :</b> {real_price_count} prix de marché récupéré(s). Les autres prix peuvent être estimés.
             </div>
             """,
             unsafe_allow_html=True,
@@ -1296,6 +1290,16 @@ else:
             """,
             unsafe_allow_html=True,
         )
+else:
+    st.markdown(
+        """
+        <div class="portfolio-note">
+            <b>Aucune position ouverte :</b> votre portefeuille contient uniquement du cash.
+            Simulez un premier achat depuis l’Analyse IA ou depuis le formulaire ci-dessous.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 # ============================================================
@@ -1384,7 +1388,7 @@ with left:
     if orders:
         sorted_orders = list(reversed(orders))
 
-        initial_value = 10000.0
+        initial_value = initial_capital if initial_capital > 0 else cash_balance
         first_order = sorted_orders[0]
         last_order = sorted_orders[-1]
 
@@ -1543,27 +1547,40 @@ with left:
         unsafe_allow_html=True,
     )
 
-    for row in position_rows:
-        weight = (row["value"] / invested_value * 100) if invested_value > 0 else 0
-        var_class = "fp-positive" if row["pnl_pct"] >= 0 else "fp-negative"
+    if position_rows:
+        for row in position_rows:
+            weight = (row["value"] / invested_value * 100) if invested_value > 0 else 0
+            var_class = "fp-positive" if row["pnl_pct"] >= 0 else "fp-negative"
 
-        st.markdown(
-            f"""
-            <div class="fp-row" style="grid-template-columns:2fr 1fr 1fr 1fr;">
-                <div>
-                    <div class="fp-main-text">{row["nom"]} ({row["ticker"]})</div>
-                    <div class="fp-sub-text">Quantité {row["qty"]:.2f} · PRU ${row["avg"]:,.2f} · {row["secteur"]}</div>
-                </div>
-                <div>
-                    <div class="fp-main-text">${row["current"]:,.2f}</div>
-                    <div class="price-badge">{row["price_source"]}</div>
-                </div>
-                <div class="fp-main-text {var_class}">{row["pnl_pct"]:+.2f}%</div>
-                <div>
-                    <div class="fp-main-text">{weight:.1f}%</div>
-                    <div style="height:8px;background:#E7EEF9;border-radius:99px;margin-top:0.5rem;overflow:hidden;">
-                        <div style="height:100%;width:{min(weight,100)}%;background:linear-gradient(135deg,#2F7CFF,#31E6A8);border-radius:99px;"></div>
+            st.markdown(
+                f"""
+                <div class="fp-row" style="grid-template-columns:2fr 1fr 1fr 1fr;">
+                    <div>
+                        <div class="fp-main-text">{row["nom"]} ({row["ticker"]})</div>
+                        <div class="fp-sub-text">Quantité {row["qty"]:.2f} · PRU ${row["avg"]:,.2f} · {row["secteur"]}</div>
                     </div>
+                    <div>
+                        <div class="fp-main-text">${row["current"]:,.2f}</div>
+                        <div class="price-badge">{row["price_source"]}</div>
+                    </div>
+                    <div class="fp-main-text {var_class}">{row["pnl_pct"]:+.2f}%</div>
+                    <div>
+                        <div class="fp-main-text">{weight:.1f}%</div>
+                        <div style="height:8px;background:#E7EEF9;border-radius:99px;margin-top:0.5rem;overflow:hidden;">
+                            <div style="height:100%;width:{min(weight,100)}%;background:linear-gradient(135deg,#2F7CFF,#31E6A8);border-radius:99px;"></div>
+                        </div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+    else:
+        st.markdown(
+            """
+            <div class="fp-row" style="grid-template-columns:1fr;">
+                <div>
+                    <div class="fp-main-text">Aucune position enregistrée</div>
+                    <div class="fp-sub-text">Votre capital est actuellement disponible en cash. Utilisez l’Analyse IA pour choisir une action, ou simulez un ordre ci-dessous.</div>
                 </div>
             </div>
             """,
