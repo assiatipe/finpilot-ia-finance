@@ -11,7 +11,6 @@ from datetime import datetime
 
 
 DB_PATH = "finpilot.db"
-SESSION_FILE = os.path.join(os.path.dirname(__file__), ".finpilot_session")
 
 # ============================================================
 # GOOGLE OAUTH — VRAIE CONNEXION GOOGLE
@@ -48,33 +47,6 @@ def get_google_client_secret():
         return st.secrets["google_oauth"]["client_secret"]
     except Exception:
         return os.getenv("GOOGLE_CLIENT_SECRET", "")
-
-
-def get_google_redirect_uri():
-    """
-    URL de redirection OAuth utilisée par Google.
-
-    En local : http://localhost:8502
-    Sur Streamlit Cloud : valeur définie dans Settings > Secrets :
-        [google_oauth]
-        redirect_uri = "https://votre-app.streamlit.app"
-    """
-    try:
-        uri = st.secrets["google_oauth"].get("redirect_uri", "")
-        if uri:
-            return str(uri).strip().rstrip("/")
-    except Exception:
-        pass
-
-    return os.getenv("GOOGLE_REDIRECT_URI", GOOGLE_REDIRECT_URI).strip().rstrip("/")
-
-
-def oauth_debug_enabled():
-    """
-    Debug temporaire pour vérifier la configuration Google OAuth.
-    Mets False après correction si tu ne veux plus afficher ces informations.
-    """
-    return True
 
 
 # ============================================================
@@ -262,7 +234,7 @@ def verify_login(identifier: str, password: str):
         return False, None, "Aucun compte trouvé avec ces identifiants."
 
     if user.get("password_hash") == "GOOGLE_AUTH_USER":
-        return False, None, "Ce compte utilise la connexion Google. Cliquez sur Continuer avec Google."
+        return False, None, "Ce compte a été créé avec Google OAuth. Pour cette version de démonstration, créez un compte classique avec email et mot de passe."
 
     if user.get("password_hash") != hash_password(password):
         return False, None, "Mot de passe incorrect."
@@ -274,6 +246,68 @@ def verify_login(identifier: str, password: str):
 # SESSION
 # ============================================================
 
+def set_query_uid(user_id):
+    """Ajoute uid dans l’URL quand Streamlit le permet."""
+    try:
+        st.query_params["uid"] = str(user_id)
+    except Exception:
+        try:
+            st.experimental_set_query_params(uid=str(user_id))
+        except Exception:
+            pass
+
+
+def persist_user_session(user_id):
+    """Sauvegarde locale du dernier utilisateur connecté pour restaurer après reload."""
+    try:
+        with open(SESSION_FILE, "w", encoding="utf-8") as f:
+            f.write(str(user_id))
+    except Exception:
+        pass
+
+
+def read_persisted_user_id():
+    try:
+        if not os.path.exists(SESSION_FILE):
+            return None
+        with open(SESSION_FILE, "r", encoding="utf-8") as f:
+            value = f.read().strip()
+        return int(value) if value.isdigit() else None
+    except Exception:
+        return None
+
+
+def clear_persisted_user_session():
+    try:
+        if os.path.exists(SESSION_FILE):
+            os.remove(SESSION_FILE)
+    except Exception:
+        pass
+
+
+def get_user_by_id(user_id: int):
+    ensure_users_table()
+
+    conn = get_connection()
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT *
+        FROM users
+        WHERE id = ?
+        LIMIT 1
+        """,
+        (user_id,),
+    )
+
+    row = cur.fetchone()
+    conn.close()
+
+    return dict(row) if row else None
+
+
 def init_auth_state():
     ensure_users_table()
 
@@ -281,6 +315,7 @@ def init_auth_state():
         "logged_in": False,
         "user_id": None,
         "username": None,
+        "user_name": None,
         "email": None,
         "oauth_state": None,
     }
@@ -289,20 +324,47 @@ def init_auth_state():
         if key not in st.session_state:
             st.session_state[key] = value
 
+    # Restauration après reload :
+    # 1) uid dans l'URL si présent
+    # 2) sinon fichier local .finpilot_session
+    if not st.session_state.get("logged_in"):
+        uid = get_query_param("uid")
 
-def login_user(user: dict):
+        if uid is None:
+            uid = read_persisted_user_id()
+
+        if uid:
+            try:
+                user = get_user_by_id(int(uid))
+                if user:
+                    login_user(user, update_url=True)
+            except Exception:
+                pass
+
+
+def login_user(user: dict, update_url: bool = True):
     st.session_state.logged_in = True
     st.session_state.user_id = user.get("id")
     st.session_state.username = user.get("username")
+    st.session_state.user_name = user.get("username")
     st.session_state.email = user.get("email")
+
+    if user.get("id") is not None:
+        persist_user_session(user.get("id"))
+        if update_url:
+            set_query_uid(user.get("id"))
 
 
 def logout():
     st.session_state.logged_in = False
     st.session_state.user_id = None
     st.session_state.username = None
+    st.session_state.user_name = None
     st.session_state.email = None
     st.session_state.oauth_state = None
+
+    clear_persisted_user_session()
+    clear_url_params()
 
 
 # ============================================================
@@ -320,7 +382,7 @@ def build_google_auth_url():
 
     params = {
         "client_id": client_id,
-        "redirect_uri": get_google_redirect_uri(),
+        "redirect_uri": GOOGLE_REDIRECT_URI,
         "response_type": "code",
         "scope": "openid email profile",
         "access_type": "online",
@@ -345,7 +407,7 @@ def exchange_code_for_token(code: str):
         "code": code,
         "client_id": client_id,
         "client_secret": client_secret,
-        "redirect_uri": get_google_redirect_uri(),
+        "redirect_uri": GOOGLE_REDIRECT_URI,
         "grant_type": "authorization_code",
     }
 
@@ -1440,10 +1502,6 @@ body {{
 def render_auth_screen():
     init_auth_state()
 
-    # Important : d'abord traiter le retour Google.
-    # Si Google renvoie ?code=..., on connecte l'utilisateur puis on reste dans l'app.
-    handle_google_callback()
-
     inject_global_login_style()
 
     logo_b64 = image_to_base64("assets/finpilot_logo_final.png")
@@ -1451,7 +1509,6 @@ def render_auth_screen():
     google_client_id = get_google_client_id()
     google_client_secret = get_google_client_secret()
     google_auth_url = build_google_auth_url()
-    google_redirect_uri = get_google_redirect_uri()
 
     left, right = st.columns([1.75, 1.05], gap="large")
 
@@ -1520,34 +1577,6 @@ def render_auth_screen():
                             else:
                                 st.error(message)
 
-                html("""
-<div class="or-line">OU</div>
-""")
-
-                if oauth_debug_enabled():
-                    st.info(f"Google redirect URI utilisé : {google_redirect_uri}")
-                    st.info(f"Google client ID utilisé : {google_client_id if google_client_id else 'NON CONFIGURÉ'}")
-
-                if google_client_id and google_client_secret:
-                    html(f"""
-<a class="google-login-link" href="{google_auth_url}" target="_self">
-    <span class="google-g">G</span>
-    <span>Continuer avec Google</span>
-</a>
-""")
-                else:
-                    html("""
-<div class="google-login-link" style="opacity:0.55; cursor:not-allowed;">
-    <span class="google-g">G</span>
-    <span>Google à configurer</span>
-</div>
-
-<div class="oauth-warning">
-    Le bouton Google sera actif après l’ajout de <b>client_id</b> et
-    <b>client_secret</b> dans <b>.streamlit/secrets.toml</b>.
-    Utilisez aussi <b>http://localhost:8502</b> comme URL de redirection Google Cloud.
-</div>
-""")
 
             with register_tab:
                 with st.form("register_form_finpilot", clear_on_submit=False):
