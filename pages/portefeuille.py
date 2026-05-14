@@ -14,7 +14,6 @@ from database import (
     add_order,
     upsert_portfolio_position,
     update_cash_balance,
-    get_user_initial_capital,
 )
 from styles import load_global_styles
 from sidebar_ui import render_sidebar
@@ -723,7 +722,8 @@ st.markdown(
         }
 
         .stTextInput label,
-        .stNumberInput label {
+        .stNumberInput label,
+        .stSelectbox label {
             font-size: .92rem !important;
             font-weight: 900 !important;
             color: #10233F !important;
@@ -731,7 +731,8 @@ st.markdown(
         }
 
         .stTextInput input,
-        .stNumberInput input {
+        .stNumberInput input,
+        .stSelectbox [data-baseweb="select"] > div {
             font-size: 1rem !important;
             min-height: 50px !important;
             border-radius: 14px !important;
@@ -961,6 +962,82 @@ DEFAULT_SECTEURS = {
     "SPY": "ETF diversifié",
     "VTI": "ETF diversifié",
 }
+
+# Actions proposées dans la barre de recherche du formulaire d'ordre.
+# Streamlit selectbox est recherchable : l'utilisateur peut taper le nom ou le ticker.
+ACTIONS_DISPONIBLES = {
+    "Apple Inc. — AAPL — Technologie": {
+        "ticker": "AAPL", "name": "Apple Inc.", "sector": "Technologie", "default_price": 195.0
+    },
+    "Microsoft — MSFT — Technologie": {
+        "ticker": "MSFT", "name": "Microsoft", "sector": "Technologie", "default_price": 421.7
+    },
+    "NVIDIA — NVDA — Technologie": {
+        "ticker": "NVDA", "name": "NVIDIA", "sector": "Technologie", "default_price": 120.0
+    },
+    "Alphabet — GOOGL — Communication": {
+        "ticker": "GOOGL", "name": "Alphabet", "sector": "Communication", "default_price": 175.0
+    },
+    "Amazon — AMZN — Consommation discrétionnaire": {
+        "ticker": "AMZN", "name": "Amazon", "sector": "Consommation discrétionnaire", "default_price": 185.0
+    },
+    "Meta Platforms — META — Communication": {
+        "ticker": "META", "name": "Meta Platforms", "sector": "Communication", "default_price": 480.0
+    },
+    "Johnson & Johnson — JNJ — Santé": {
+        "ticker": "JNJ", "name": "Johnson & Johnson", "sector": "Santé", "default_price": 158.0
+    },
+    "UnitedHealth — UNH — Santé": {
+        "ticker": "UNH", "name": "UnitedHealth", "sector": "Santé", "default_price": 510.0
+    },
+    "Pfizer — PFE — Santé": {
+        "ticker": "PFE", "name": "Pfizer", "sector": "Santé", "default_price": 28.0
+    },
+    "JPMorgan Chase — JPM — Finance": {
+        "ticker": "JPM", "name": "JPMorgan Chase", "sector": "Finance", "default_price": 191.8
+    },
+    "Visa — V — Finance": {
+        "ticker": "V", "name": "Visa", "sector": "Finance", "default_price": 279.4
+    },
+    "Mastercard — MA — Finance": {
+        "ticker": "MA", "name": "Mastercard", "sector": "Finance", "default_price": 455.0
+    },
+    "Coca-Cola — KO — Consommation de base": {
+        "ticker": "KO", "name": "Coca-Cola", "sector": "Consommation de base", "default_price": 78.4
+    },
+    "Procter & Gamble — PG — Consommation de base": {
+        "ticker": "PG", "name": "Procter & Gamble", "sector": "Consommation de base", "default_price": 168.0
+    },
+    "Walmart — WMT — Consommation de base": {
+        "ticker": "WMT", "name": "Walmart", "sector": "Consommation de base", "default_price": 127.6
+    },
+    "McDonald's — MCD — Consommation discrétionnaire": {
+        "ticker": "MCD", "name": "McDonald's", "sector": "Consommation discrétionnaire", "default_price": 290.0
+    },
+    "Cisco Systems — CSCO — Technologie": {
+        "ticker": "CSCO", "name": "Cisco Systems", "sector": "Technologie", "default_price": 52.0
+    },
+    "Verizon — VZ — Communication": {
+        "ticker": "VZ", "name": "Verizon", "sector": "Communication", "default_price": 40.0
+    },
+    "Exxon Mobil — XOM — Énergie": {
+        "ticker": "XOM", "name": "Exxon Mobil", "sector": "Énergie", "default_price": 115.0
+    },
+    "SPDR S&P 500 ETF — SPY — ETF diversifié": {
+        "ticker": "SPY", "name": "SPDR S&P 500 ETF", "sector": "ETF diversifié", "default_price": 520.0
+    },
+}
+
+
+def get_action_meta_from_label(label):
+    return ACTIONS_DISPONIBLES.get(label, next(iter(ACTIONS_DISPONIBLES.values())))
+
+
+def get_suggested_order_price(ticker, fallback_price):
+    latest = get_latest_price(ticker)
+    if latest is not None and latest > 0:
+        return float(latest), "Marché"
+    return float(fallback_price), "Estimé"
 
 
 def get_sector_for_ticker(ticker):
@@ -1194,17 +1271,15 @@ positions = get_portfolio_positions(user_id)
 orders = get_user_orders(user_id)
 
 real_position_map = get_real_position_map(positions)
+has_real_positions = len([p for p in positions if p[2] > 0]) > 0
 
-# Données réelles de l'utilisateur uniquement.
-# Ancienne logique supprimée : on n'affiche plus de positions de démonstration
-# lorsqu'un utilisateur n'a encore passé aucun ordre.
-position_rows, invested_value, real_price_count = build_position_rows(positions)
-using_demo_data = False
-
-try:
-    initial_capital = float(get_user_initial_capital(user_id) or cash_balance or 0)
-except Exception:
-    initial_capital = float(cash_balance or 0)
+if has_real_positions:
+    position_rows, invested_value, real_price_count = build_position_rows(positions)
+    using_demo_data = False
+else:
+    position_rows, invested_value = build_demo_positions()
+    real_price_count = 0
+    using_demo_data = True
 
 total_portfolio = cash_balance + invested_value
 global_pnl = sum((r["current"] - r["avg"]) * r["qty"] for r in position_rows)
@@ -1271,12 +1346,21 @@ hero_html = f"""
 hero_html = "\n".join(line.strip() for line in hero_html.strip().splitlines())
 st.markdown(hero_html, unsafe_allow_html=True)
 
-if position_rows:
+if using_demo_data:
+    st.markdown(
+        """
+        <div class="portfolio-alert">
+            <b>Données de démonstration :</b> aucune position réelle n’est enregistrée. Les positions ci-dessous illustrent le fonctionnement.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+else:
     if real_price_count > 0:
         st.markdown(
             f"""
             <div class="portfolio-good">
-                <b>Portefeuille simulé :</b> {real_price_count} prix de marché récupéré(s). Les autres prix peuvent être estimés.
+                <b>Portefeuille réel :</b> {real_price_count} prix de marché récupéré(s). Les autres prix peuvent être estimés.
             </div>
             """,
             unsafe_allow_html=True,
@@ -1290,16 +1374,6 @@ if position_rows:
             """,
             unsafe_allow_html=True,
         )
-else:
-    st.markdown(
-        """
-        <div class="portfolio-note">
-            <b>Aucune position ouverte :</b> votre portefeuille contient uniquement du cash.
-            Simulez un premier achat depuis l’Analyse IA ou depuis le formulaire ci-dessous.
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 
 # ============================================================
@@ -1388,7 +1462,7 @@ with left:
     if orders:
         sorted_orders = list(reversed(orders))
 
-        initial_value = initial_capital if initial_capital > 0 else cash_balance
+        initial_value = 10000.0
         first_order = sorted_orders[0]
         last_order = sorted_orders[-1]
 
@@ -1547,40 +1621,27 @@ with left:
         unsafe_allow_html=True,
     )
 
-    if position_rows:
-        for row in position_rows:
-            weight = (row["value"] / invested_value * 100) if invested_value > 0 else 0
-            var_class = "fp-positive" if row["pnl_pct"] >= 0 else "fp-negative"
+    for row in position_rows:
+        weight = (row["value"] / invested_value * 100) if invested_value > 0 else 0
+        var_class = "fp-positive" if row["pnl_pct"] >= 0 else "fp-negative"
 
-            st.markdown(
-                f"""
-                <div class="fp-row" style="grid-template-columns:2fr 1fr 1fr 1fr;">
-                    <div>
-                        <div class="fp-main-text">{row["nom"]} ({row["ticker"]})</div>
-                        <div class="fp-sub-text">Quantité {row["qty"]:.2f} · PRU ${row["avg"]:,.2f} · {row["secteur"]}</div>
-                    </div>
-                    <div>
-                        <div class="fp-main-text">${row["current"]:,.2f}</div>
-                        <div class="price-badge">{row["price_source"]}</div>
-                    </div>
-                    <div class="fp-main-text {var_class}">{row["pnl_pct"]:+.2f}%</div>
-                    <div>
-                        <div class="fp-main-text">{weight:.1f}%</div>
-                        <div style="height:8px;background:#E7EEF9;border-radius:99px;margin-top:0.5rem;overflow:hidden;">
-                            <div style="height:100%;width:{min(weight,100)}%;background:linear-gradient(135deg,#2F7CFF,#31E6A8);border-radius:99px;"></div>
-                        </div>
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-    else:
         st.markdown(
-            """
-            <div class="fp-row" style="grid-template-columns:1fr;">
+            f"""
+            <div class="fp-row" style="grid-template-columns:2fr 1fr 1fr 1fr;">
                 <div>
-                    <div class="fp-main-text">Aucune position enregistrée</div>
-                    <div class="fp-sub-text">Votre capital est actuellement disponible en cash. Utilisez l’Analyse IA pour choisir une action, ou simulez un ordre ci-dessous.</div>
+                    <div class="fp-main-text">{row["nom"]} ({row["ticker"]})</div>
+                    <div class="fp-sub-text">Quantité {row["qty"]:.2f} · PRU ${row["avg"]:,.2f} · {row["secteur"]}</div>
+                </div>
+                <div>
+                    <div class="fp-main-text">${row["current"]:,.2f}</div>
+                    <div class="price-badge">{row["price_source"]}</div>
+                </div>
+                <div class="fp-main-text {var_class}">{row["pnl_pct"]:+.2f}%</div>
+                <div>
+                    <div class="fp-main-text">{weight:.1f}%</div>
+                    <div style="height:8px;background:#E7EEF9;border-radius:99px;margin-top:0.5rem;overflow:hidden;">
+                        <div style="height:100%;width:{min(weight,100)}%;background:linear-gradient(135deg,#2F7CFF,#31E6A8);border-radius:99px;"></div>
+                    </div>
                 </div>
             </div>
             """,
@@ -1606,46 +1667,73 @@ with left:
 
     st.markdown('<div class="sim-form-card">', unsafe_allow_html=True)
 
-    oc1, oc2, oc3 = st.columns(3)
+    oc1, oc2, oc3 = st.columns([1.45, 0.75, 0.80])
 
     with oc1:
-        order_ticker = st.text_input("Ticker", placeholder="Exemple : AAPL", key="order_ticker")
+        selected_action_label = st.selectbox(
+            "Action à simuler",
+            options=list(ACTIONS_DISPONIBLES.keys()),
+            key="order_action_select",
+            help="Tapez le nom de l’action ou son ticker pour la rechercher rapidement.",
+        )
+        selected_action = get_action_meta_from_label(selected_action_label)
+        order_ticker = selected_action["ticker"].upper().strip()
+        order_name = selected_action["name"]
+        order_sector = selected_action["sector"]
+
+    suggested_price, price_source = get_suggested_order_price(
+        order_ticker,
+        selected_action.get("default_price", 100.0),
+    )
 
     with oc2:
         order_qty = st.number_input("Quantité", min_value=0.01, value=1.0, step=0.01, key="order_qty")
 
     with oc3:
-        order_price = st.number_input("Prix unitaire ($)", min_value=0.01, value=100.0, step=0.01, key="order_price")
+        order_price = st.number_input(
+            "Prix unitaire ($)",
+            min_value=0.01,
+            value=float(round(suggested_price, 2)),
+            step=0.01,
+            key=f"order_price_{order_ticker}",
+            help="Prix prérempli automatiquement quand le cours est disponible ; vous pouvez le modifier pour une simulation.",
+        )
+
+    st.markdown(
+        f"""
+        <div class="portfolio-note" style="margin-top:.4rem;">
+            <b>Action sélectionnée :</b> {order_name} ({order_ticker}) · {order_sector}<br>
+            <b>Prix proposé :</b> ${order_price:,.2f} · Source : {price_source}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     b1, b2 = st.columns(2)
 
     with b1:
         if st.button("Acheter", use_container_width=True, type="primary", key="btn_buy"):
-            ticker_clean = order_ticker.upper().strip() if order_ticker else ""
+            ticker_clean = order_ticker
             total = order_qty * order_price
 
-            if not ticker_clean:
-                st.error("Entrez un ticker valide.")
-            elif total > cash_balance:
+            if total > cash_balance:
                 st.error(f"Cash insuffisant. Solde disponible : ${cash_balance:,.2f}")
             else:
                 new_cash = cash_balance - total
 
                 update_cash_balance(user_id, new_cash)
-                upsert_portfolio_position(user_id, ticker_clean, ticker_clean, order_qty, order_price)
+                upsert_portfolio_position(user_id, ticker_clean, order_name, order_qty, order_price)
                 add_order(user_id, ticker_clean, "BUY", order_qty, order_price, total, new_cash)
 
-                st.success(f"Achat enregistré : {order_qty:.2f} action(s) {ticker_clean}.")
+                st.success(f"Achat enregistré : {order_qty:.2f} action(s) {order_name} ({ticker_clean}).")
                 st.rerun()
 
     with b2:
         if st.button("Vendre", use_container_width=True, key="btn_sell"):
-            ticker_clean = order_ticker.upper().strip() if order_ticker else ""
+            ticker_clean = order_ticker
             total = order_qty * order_price
 
-            if not ticker_clean:
-                st.error("Entrez un ticker valide.")
-            elif ticker_clean not in real_position_map:
+            if ticker_clean not in real_position_map:
                 st.error(f"Vente impossible : vous ne détenez aucune position {ticker_clean}.")
             elif real_position_map[ticker_clean]["qty"] < order_qty:
                 st.error(
@@ -1656,10 +1744,10 @@ with left:
                 new_cash = cash_balance + total
 
                 update_cash_balance(user_id, new_cash)
-                upsert_portfolio_position(user_id, ticker_clean, ticker_clean, -order_qty, order_price)
+                upsert_portfolio_position(user_id, ticker_clean, order_name, -order_qty, order_price)
                 add_order(user_id, ticker_clean, "SELL", order_qty, order_price, total, new_cash)
 
-                st.success(f"Vente enregistrée : {order_qty:.2f} action(s) {ticker_clean}.")
+                st.success(f"Vente enregistrée : {order_qty:.2f} action(s) {order_name} ({ticker_clean}).")
                 st.rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
