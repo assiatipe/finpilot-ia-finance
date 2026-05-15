@@ -1726,7 +1726,7 @@ with left:
                 add_order(user_id, ticker_clean, "BUY", order_qty, order_price, total, new_cash)
 
                 st.success(f"Achat enregistré : {order_qty:.2f} action(s) {order_name} ({ticker_clean}).")
-                st.rerun()
+                st.experimental_rerun()
 
     with b2:
         if st.button("Vendre", use_container_width=True, key="btn_sell"):
@@ -1748,7 +1748,7 @@ with left:
                 add_order(user_id, ticker_clean, "SELL", order_qty, order_price, total, new_cash)
 
                 st.success(f"Vente enregistrée : {order_qty:.2f} action(s) {order_name} ({ticker_clean}).")
-                st.rerun()
+                st.experimental_rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
 
