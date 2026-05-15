@@ -11,6 +11,7 @@ from datetime import datetime
 
 
 DB_PATH = "finpilot.db"
+SESSION_FILE = os.path.join(os.path.dirname(__file__), ".finpilot_session")
 
 # ============================================================
 # GOOGLE OAUTH — VRAIE CONNEXION GOOGLE
@@ -1505,10 +1506,6 @@ def render_auth_screen():
     inject_global_login_style()
 
     logo_b64 = image_to_base64("assets/finpilot_logo_final.png")
-
-    google_client_id = get_google_client_id()
-    google_client_secret = get_google_client_secret()
-    google_auth_url = build_google_auth_url()
 
     left, right = st.columns([1.75, 1.05], gap="large")
 
