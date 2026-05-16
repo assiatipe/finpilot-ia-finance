@@ -150,43 +150,55 @@ def calculate_progression(user_id: int):
         progress_pct = max(0, min(progress_pct, 100))
         points_to_next = max(next_threshold - points, 0)
 
-    # Badges
+    # Badges plus visuels pour renforcer la gamification
     badges = [
         {
-            "name": "Premier Profil",
+            "name": "Explorateur FinPilot",
+            "icon": "◆",
             "condition": nb_analyses >= 1,
-            "description": "Vous avez identifié votre profil investisseur.",
+            "description": "Première analyse IA réalisée.",
             "requirement": "Faire une analyse IA.",
+            "reward": "+20 points",
         },
         {
-            "name": "Premier Achat",
+            "name": "Premier Trade",
+            "icon": "↗",
             "condition": any(str(o.get("order_type", "")).upper() == "BUY" for o in orders if isinstance(o, dict)),
-            "description": "Vous avez simulé votre première décision d’achat.",
-            "requirement": "Simuler un achat.",
+            "description": "Premier achat simulé enregistré.",
+            "requirement": "Simuler un achat dans le portefeuille.",
+            "reward": "+15 points",
         },
         {
             "name": "Analyste IA",
+            "icon": "AI",
             "condition": nb_analyses >= 3,
-            "description": "Vous utilisez régulièrement les analyses intelligentes.",
+            "description": "Utilisation régulière de l’analyse intelligente.",
             "requirement": "Faire 3 analyses IA.",
+            "reward": "Badge Silver+",
         },
         {
-            "name": "Diversification",
+            "name": "Diversificateur",
+            "icon": "3",
             "condition": nb_positions >= 3,
-            "description": "Votre portefeuille contient plusieurs positions.",
+            "description": "Portefeuille réparti sur plusieurs actions.",
             "requirement": "Détenir au moins 3 actions différentes.",
+            "reward": "Accès Gold",
         },
         {
-            "name": "Contributeur",
+            "name": "Ambassadeur",
+            "icon": "★",
             "condition": nb_feedbacks >= 1,
-            "description": "Vous avez donné un avis pour améliorer FinPilot.",
+            "description": "Avis client déposé pour améliorer FinPilot.",
             "requirement": "Laisser un avis client.",
+            "reward": "+10 points",
         },
         {
-            "name": "Gestionnaire prudent",
+            "name": "Stratège prudent",
+            "icon": "%",
             "condition": cash_balance >= initial_capital * 0.5 if initial_capital > 0 else False,
-            "description": "Vous conservez une part importante de liquidité.",
+            "description": "Liquidité conservée à un niveau prudent.",
             "requirement": "Garder au moins 50 % du capital en cash.",
+            "reward": "Badge prudence",
         },
     ]
 
@@ -238,6 +250,68 @@ def next_objective(data):
     if data["level"] == "Gold":
         return "Complétez 5 analyses IA, 5 ordres simulés et laissez un avis pour débloquer Platinum."
     return "Vous avez atteint le niveau maximal. Vous pouvez continuer à enrichir votre historique FinPilot."
+
+
+def get_daily_mission(data):
+    """Mission visible et actionnable pour rendre la progression plus fun."""
+    if data["nb_analyses"] == 0:
+        return {
+            "title": "Mission du jour",
+            "name": "Lancer votre première analyse IA",
+            "text": "Répondez au questionnaire investisseur pour découvrir votre profil et gagner vos premiers points.",
+            "reward": "+20 points · Badge Explorateur FinPilot",
+            "button": "Lancer l’analyse IA",
+            "page": "pages/analyse.py",
+        }
+
+    if data["nb_orders"] == 0:
+        return {
+            "title": "Mission du jour",
+            "name": "Simuler un premier achat",
+            "text": "Choisissez une action dans le portefeuille et testez un achat sans argent réel.",
+            "reward": "+15 points · Badge Premier Trade",
+            "button": "Simuler un ordre",
+            "page": "pages/portefeuille.py",
+        }
+
+    if data["nb_positions"] < 3:
+        return {
+            "title": "Mission du jour",
+            "name": "Diversifier le portefeuille",
+            "text": "Ajoutez plusieurs positions pour réduire le risque spécifique et progresser vers Gold.",
+            "reward": "Badge Diversificateur · Analyse avancée Gold",
+            "button": "Voir le portefeuille",
+            "page": "pages/portefeuille.py",
+        }
+
+    if data["nb_feedbacks"] == 0:
+        return {
+            "title": "Mission du jour",
+            "name": "Partager votre avis",
+            "text": "Laissez un retour utilisateur pour contribuer à l’amélioration de FinPilot.",
+            "reward": "+10 points · Badge Ambassadeur",
+            "button": "Donner un avis",
+            "page": "pages/feedback.py",
+        }
+
+    return {
+        "title": "Mission bonus",
+        "name": "Continuer à enrichir votre parcours",
+        "text": "Refaites une analyse, comparez les recommandations et améliorez votre portefeuille simulé.",
+        "reward": "Historique plus riche · Rapport personnalisé",
+        "button": "Nouvelle analyse",
+        "page": "pages/analyse.py",
+    }
+
+
+def level_reward(level):
+    rewards = {
+        "Bronze": "Récompense actuelle : accès au questionnaire, au Top 5 et au portefeuille simulé.",
+        "Silver": "Récompense actuelle : explications détaillées des recommandations IA.",
+        "Gold": "Récompense actuelle : analyse avancée de diversification du portefeuille.",
+        "Platinum": "Récompense actuelle : rapport personnalisé du parcours FinPilot.",
+    }
+    return rewards.get(level, "Récompense actuelle : parcours FinPilot actif.")
 
 
 # ============================================================
@@ -629,6 +703,156 @@ html(
             line-height: 1.65;
         }
 
+        .mission-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 26px;
+            padding: 1.35rem 1.45rem;
+            margin-bottom: 1rem;
+            color: white;
+            background:
+                radial-gradient(circle at 90% 10%, rgba(255,255,255,.20), transparent 28%),
+                linear-gradient(135deg, #0B1D48 0%, #2F7CFF 52%, #31C48D 100%);
+            box-shadow: 0 18px 42px rgba(47,124,255,.16);
+            border: 1px solid rgba(255,255,255,.15);
+        }
+
+        .mission-card::after {
+            content: "";
+            position: absolute;
+            right: -62px;
+            bottom: -64px;
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.15);
+        }
+
+        .mission-kicker {
+            position: relative;
+            z-index: 2;
+            color: #A7FFF0;
+            font-size: .82rem;
+            font-weight: 950;
+            letter-spacing: .10em;
+            text-transform: uppercase;
+            font-family: 'Sora', sans-serif;
+            margin-bottom: .35rem;
+        }
+
+        .mission-title {
+            position: relative;
+            z-index: 2;
+            font-family: 'Sora', sans-serif;
+            font-size: 1.55rem;
+            font-weight: 950;
+            letter-spacing: -.035em;
+            line-height: 1.16;
+            margin-bottom: .45rem;
+            color: white;
+        }
+
+        .mission-text {
+            position: relative;
+            z-index: 2;
+            color: rgba(255,255,255,.88);
+            font-size: .98rem;
+            line-height: 1.6;
+            max-width: 860px;
+        }
+
+        .mission-reward {
+            position: relative;
+            z-index: 2;
+            display: inline-block;
+            margin-top: .9rem;
+            padding: .48rem .78rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,.14);
+            border: 1px solid rgba(255,255,255,.18);
+            font-size: .86rem;
+            font-weight: 900;
+            color: white;
+        }
+
+        .fun-path {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: .8rem;
+            margin-bottom: 1rem;
+        }
+
+        .fun-step {
+            background: #FFFFFF;
+            border: 1px solid #DCE7F8;
+            border-radius: 18px;
+            padding: .95rem;
+            box-shadow: 0 10px 24px rgba(22,46,90,.055);
+            min-height: 115px;
+        }
+
+        .fun-step.active {
+            border-color: #9FD8FF;
+            background: linear-gradient(180deg, #FFFFFF 0%, #EEF7FF 100%);
+            box-shadow: 0 12px 30px rgba(47,124,255,.12);
+        }
+
+        .fun-step.locked {
+            opacity: .70;
+        }
+
+        .fun-step-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .5rem;
+            margin-bottom: .55rem;
+        }
+
+        .fun-step-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #2F7CFF, #31E6A8);
+            color: white;
+            font-family: 'Sora', sans-serif;
+            font-weight: 950;
+        }
+
+        .fun-step-status {
+            color: #64748B;
+            font-size: .74rem;
+            font-weight: 900;
+        }
+
+        .fun-step-title {
+            color: #10233F;
+            font-family: 'Sora', sans-serif;
+            font-size: .98rem;
+            font-weight: 950;
+            margin-bottom: .25rem;
+        }
+
+        .fun-step-text {
+            color: #64748B;
+            font-size: .84rem;
+            line-height: 1.42;
+        }
+
+        .badge-meta {
+            margin-top: .55rem;
+            display: inline-block;
+            padding: .28rem .55rem;
+            border-radius: 999px;
+            background: #EEF6FF;
+            color: #2F7CFF;
+            font-size: .74rem;
+            font-weight: 900;
+        }
+
         @media (max-width: 1100px) {
             .roadmap-grid,
             .badge-grid {
@@ -660,6 +884,7 @@ points = data["points"]
 level = data["level"]
 level_color = data["level_color"]
 progress_pct = data["progress_pct"]
+mission = get_daily_mission(data)
 
 
 # ============================================================
@@ -782,6 +1007,54 @@ with k4:
 
 
 # ============================================================
+# MISSION DU JOUR + CHEMIN FUN
+# ============================================================
+
+html(
+    f"""
+    <div class="mission-card">
+        <div class="mission-kicker">{mission["title"]}</div>
+        <div class="mission-title">{mission["name"]}</div>
+        <div class="mission-text">{mission["text"]}</div>
+        <div class="mission-reward">Récompense : {mission["reward"]}</div>
+    </div>
+    """
+)
+
+mc1, mc2, mc3 = st.columns([1, 1, 2], gap="medium")
+with mc1:
+    if st.button(mission["button"], use_container_width=True, type="primary", key="daily_mission_button"):
+        st.switch_page(mission["page"])
+with mc2:
+    if st.button("Voir mes badges", use_container_width=True, key="see_badges_button"):
+        st.toast("Descendez pour voir les badges débloqués et verrouillés.")
+
+fun_steps = [
+    {"title": "Profil", "icon": "1", "done": data["nb_analyses"] >= 1, "text": "Découvrir votre profil investisseur."},
+    {"title": "Simulation", "icon": "2", "done": data["nb_orders"] >= 1, "text": "Tester une décision d’achat ou de vente."},
+    {"title": "Diversification", "icon": "3", "done": data["nb_positions"] >= 3, "text": "Répartir le portefeuille sur plusieurs actions."},
+    {"title": "Contribution", "icon": "4", "done": data["nb_feedbacks"] >= 1, "text": "Partager un avis pour améliorer FinPilot."},
+]
+
+path_html = '<div class="fun-path">'
+for step in fun_steps:
+    cls = "active" if step["done"] else "locked"
+    status = "Terminé" if step["done"] else "À faire"
+    path_html += f"""
+    <div class="fun-step {cls}">
+        <div class="fun-step-top">
+            <div class="fun-step-icon">{step['icon']}</div>
+            <div class="fun-step-status">{status}</div>
+        </div>
+        <div class="fun-step-title">{step['title']}</div>
+        <div class="fun-step-text">{step['text']}</div>
+    </div>
+    """
+path_html += "</div>"
+html(path_html)
+
+
+# ============================================================
 # NEXT OBJECTIVE
 # ============================================================
 
@@ -789,7 +1062,7 @@ html(
     f"""
     <div class="objective-card">
         <div class="objective-title">Prochain objectif</div>
-        <div class="objective-text">{next_objective(data)}</div>
+        <div class="objective-text">{next_objective(data)}<br><b>{level_reward(level)}</b></div>
     </div>
     """
 )
@@ -885,11 +1158,13 @@ for badge in data["badges"]:
     else:
         status_text = f"À débloquer : {badge['requirement']}"
 
+    badge_icon = badge.get("icon", "✓") if unlocked else "🔒"
     badge_html += f"""
     <div class="badge-card {lock_class(unlocked)}">
-        <div class="badge-icon">{"✓" if unlocked else "🔒"}</div>
+        <div class="badge-icon">{badge_icon}</div>
         <div class="badge-title">{badge["name"]}</div>
         <div class="badge-text">{status_text}</div>
+        <div class="badge-meta">{badge.get("reward", "Récompense")}</div>
     </div>
     """
 
