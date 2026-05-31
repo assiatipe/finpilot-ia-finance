@@ -122,6 +122,58 @@ def init_db():
     conn.commit()
     conn.close()
 
+    # Crée automatiquement le compte admin par défaut s'il n'existe pas
+    ensure_default_admin()
+
+
+def ensure_default_admin():
+    """
+    Crée automatiquement le compte administrateur par défaut au démarrage
+    si aucun admin n'existe dans la base. Cela résout le problème de la
+    base SQLite vide après chaque redéploiement sur Streamlit Cloud.
+    """
+    import hashlib
+
+    ADMIN_USERNAME = "admin"
+    ADMIN_EMAIL = "admin@finpilot.com"
+    ADMIN_PASSWORD = "admin123"  # Mot de passe par défaut — à changer en production
+
+    conn = get_db_connection()
+
+    # Vérifier si un admin existe déjà
+    existing_admin = conn.execute(
+        "SELECT id FROM users WHERE is_admin = 1 LIMIT 1"
+    ).fetchone()
+
+    if existing_admin:
+        conn.close()
+        return
+
+    # Vérifier si le username/email admin existe déjà (mais sans droits admin)
+    existing_user = conn.execute(
+        "SELECT id FROM users WHERE email = ? OR username = ? LIMIT 1",
+        (ADMIN_EMAIL, ADMIN_USERNAME),
+    ).fetchone()
+
+    if existing_user:
+        # L'utilisateur existe, on lui donne les droits admin
+        conn.execute(
+            "UPDATE users SET is_admin = 1 WHERE id = ?",
+            (existing_user["id"],),
+        )
+    else:
+        # Créer le compte admin avec le même hash SHA-256 que auth.py
+        password_hash = hashlib.sha256(ADMIN_PASSWORD.encode()).hexdigest()
+        conn.execute(
+            "INSERT INTO users (username, email, password_hash, is_admin, cash_balance, initial_capital, capital_configured) "
+            "VALUES (?, ?, ?, 1, NULL, NULL, 0)",
+            (ADMIN_USERNAME, ADMIN_EMAIL, password_hash),
+        )
+
+    conn.commit()
+    conn.close()
+
+
 
 def create_user(username, email, password_hash):
     """

@@ -1528,10 +1528,10 @@ with left:
                 x=portfolio_dates,
                 y=portfolio_values,
                 mode="lines+markers",
-                line=dict(color="#2F7CFF", width=5, shape="spline"),
-                marker=dict(size=12, color="#31E6A8", line=dict(color="white", width=3)),
+                line=dict(color="#2F7CFF", width=4, shape="spline"),
+                marker=dict(size=10, color="white", line=dict(color="#2F7CFF", width=3)),
                 fill="tozeroy",
-                fillcolor="rgba(47,124,255,0.13)",
+                fillcolor="rgba(47, 124, 255, 0.15)",
                 hovertemplate="<b>%{x}</b><br>Valeur : $%{y:,.2f}<extra></extra>",
             )
         )
@@ -1549,25 +1549,27 @@ with left:
 
         fig_portfolio.update_layout(
             height=390,
-            margin=dict(l=20, r=20, t=20, b=45),
+            margin=dict(l=20, r=20, t=30, b=45),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Inter", color="#10233F"),
+            font=dict(family="Inter", color="#334155"),
             xaxis=dict(
                 type="category",
                 showgrid=False,
                 zeroline=False,
-                tickfont=dict(color="#53657F", size=13),
+                tickfont=dict(color="#64748B", size=13),
             ),
             yaxis=dict(
                 range=[y_min, y_max],
                 showgrid=True,
-                gridcolor="#E6EEF8",
+                gridcolor="rgba(226, 232, 240, 0.6)",
                 zeroline=False,
-                tickfont=dict(color="#53657F", size=13),
+                tickfont=dict(color="#64748B", size=13),
                 tickprefix="$",
             ),
             showlegend=False,
+            hovermode="x unified",
+            hoverlabel=dict(bgcolor="white", font_size=14, font_family="Inter")
         )
 
         st.markdown('<div class="chart-shell">', unsafe_allow_html=True)
@@ -1781,29 +1783,51 @@ with right:
             go.Pie(
                 labels=labels,
                 values=values,
-                hole=0.62,
+                hole=0.75,
                 marker=dict(colors=["#2F7CFF", "#31E6A8", "#7A5CFF", "#F3C969", "#D44D61", "#6EA8FF"]),
-                textinfo="label",
-                hovertemplate="%{label}: $%{value:,.0f}<extra></extra>",
+                textinfo="none",
+                hovertemplate="<b>%{label}</b><br>$%{value:,.2f} (%{percent})<extra></extra>",
             )
         ]
     )
 
     fig_alloc.update_traces(
-        textfont=dict(family="Inter", size=13, color="#10233F"),
-        marker=dict(line=dict(color="white", width=3)),
+        marker=dict(line=dict(color="white", width=4)),
+        hoverlabel=dict(font_size=14, font_family="Inter"),
     )
 
     fig_alloc.update_layout(
-        height=395,
+        height=380,
         margin=dict(l=10, r=10, t=20, b=10),
         paper_bgcolor="rgba(0,0,0,0)",
         font=dict(family="Inter", color="#10233F", size=14),
         showlegend=True,
         legend=dict(
-            orientation="v",
-            font=dict(size=12, color="#10233F"),
+            orientation="h",
+            yanchor="bottom",
+            y=-0.15,
+            xanchor="center",
+            x=0.5,
+            font=dict(size=13, color="#10233F"),
         ),
+        annotations=[
+            dict(
+                text="Total",
+                x=0.5, y=0.55,
+                font_size=16,
+                font_color="#64748B",
+                showarrow=False,
+                font_family="Inter"
+            ),
+            dict(
+                text=f"${total_portfolio:,.0f}",
+                x=0.5, y=0.45,
+                font_size=28,
+                font_color="#0F172A",
+                showarrow=False,
+                font_family="Outfit"
+            )
+        ]
     )
 
     st.markdown('<div class="chart-shell">', unsafe_allow_html=True)

@@ -1490,44 +1490,61 @@ def make_top5_score_chart(top5):
     df_plot = top5.sort_values("score", ascending=True)
 
     fig = go.Figure()
+    
+    # 1. La barre fine (Lollipop stick)
     fig.add_trace(
         go.Bar(
             x=df_plot["score"],
             y=[f"{idx} - {row['nom']}" for idx, row in df_plot.iterrows()],
             orientation="h",
+            width=0.06,
+            marker=dict(color="#E2E8F0"),
+            hoverinfo="skip",
+            showlegend=False
+        )
+    )
+    
+    # 2. Le point lumineux (Lollipop candy)
+    fig.add_trace(
+        go.Scatter(
+            x=df_plot["score"],
+            y=[f"{idx} - {row['nom']}" for idx, row in df_plot.iterrows()],
+            mode="markers",
             marker=dict(
+                size=26,
                 color=df_plot["score"],
                 colorscale="Blues",
-                line=dict(color="#2F7CFF", width=1),
+                line=dict(color="white", width=4),
             ),
             hovertemplate="<b>%{y}</b><br>Score : %{x:.2f}/100<extra></extra>",
+            showlegend=False
         )
     )
 
     fig.update_layout(
         title=dict(
             text="Top 5 des actions recommandées",
-            font=dict(size=25, color="#10233F", family="Sora"),
+            font=dict(size=22, color="#0F172A", family="Outfit"),
             x=0.03,
         ),
-        height=660,
+        height=500,
         margin=dict(l=40, r=40, t=85, b=45),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#10233F", size=15, family="Inter"),
+        font=dict(color="#334155", size=14, family="Inter"),
         xaxis=dict(
             range=[0, 100],
-            gridcolor="#E6EEF8",
+            gridcolor="rgba(226, 232, 240, 0.5)",
             zeroline=False,
             title=dict(
-                text="Score MCDA",
-                font=dict(color="#64748B")
+                text="Score MCDA Global",
+                font=dict(color="#64748B", size=12)
             ),
             tickfont=dict(color="#64748B"),
         ),
-        yaxis=dict(showgrid=False, tickfont=dict(color="#10233F", size=13)),
+        yaxis=dict(showgrid=False, tickfont=dict(color="#0F172A", size=14)),
         showlegend=False,
-        bargap=0.32,
+        bargap=0.4,
     )
 
     return fig
@@ -1535,7 +1552,14 @@ def make_top5_score_chart(top5):
 
 def make_financial_radar_chart(top5):
     categories = ["Rendement", "Volatilité maîtrisée", "Bêta maîtrisé", "Sharpe"]
-    colors = ["#2F7CFF", "#1C9C73", "#7A5CFF", "#F3C969", "#D44D61"]
+    # Couleurs avec rgba pour bordure et fond transparent (glow)
+    colors = [
+        ("rgba(47, 124, 255, 1)", "rgba(47, 124, 255, 0.15)"),
+        ("rgba(28, 156, 115, 1)", "rgba(28, 156, 115, 0.15)"),
+        ("rgba(122, 92, 255, 1)", "rgba(122, 92, 255, 0.15)"),
+        ("rgba(243, 201, 105, 1)", "rgba(243, 201, 105, 0.15)"),
+        ("rgba(212, 77, 97, 1)", "rgba(212, 77, 97, 0.15)")
+    ]
 
     fig = go.Figure()
 
@@ -1548,53 +1572,53 @@ def make_financial_radar_chart(top5):
         ]
         values = values + [values[0]]
         cats = categories + [categories[0]]
+        
+        solid_color, fill_color = colors[i % len(colors)]
 
         fig.add_trace(
             go.Scatterpolar(
                 r=values,
                 theta=cats,
                 fill="toself",
-                name=f"{ticker} · {row['nom']}",
-                line=dict(width=4, color=colors[i % len(colors)]),
-                marker=dict(size=9, color=colors[i % len(colors)]),
-                opacity=0.55,
-                hovertemplate="<b>%{fullData.name}</b><br>%{theta}: %{r:.2f}<extra></extra>",
+                fillcolor=fill_color,
+                name=f"{row['nom']} ({ticker})",
+                line=dict(color=solid_color, width=3, shape="spline"),
+                marker=dict(size=8, color=solid_color, line=dict(color="white", width=2)),
+                hovertemplate="<b>%{theta}</b>: %{r:.2f}<extra></extra>",
             )
         )
 
     fig.update_layout(
         title=dict(
             text="Radar comparatif du Top 5",
-            font=dict(size=25, color="#10233F", family="Sora"),
+            font=dict(size=22, color="#0F172A", family="Outfit"),
             x=0.03,
         ),
-        height=780,
-        margin=dict(l=70, r=70, t=95, b=145),
-        paper_bgcolor="rgba(0,0,0,0)",
         polar=dict(
-            bgcolor="rgba(255,255,255,0)",
             radialaxis=dict(
                 visible=True,
-                range=[0, 1],
-                gridcolor="#DCE7F8",
-                linecolor="#DCE7F8",
-                tickfont=dict(color="#53657F", size=13, family="Inter"),
+                range=[0, 100],
+                showticklabels=False,
+                showline=False,
+                gridcolor="rgba(226, 232, 240, 0.6)",
             ),
             angularaxis=dict(
-                gridcolor="#DCE7F8",
-                linecolor="#DCE7F8",
-                tickfont=dict(color="#10233F", size=15, family="Inter"),
-            ),
+                gridcolor="rgba(226, 232, 240, 0.6)",
+                linecolor="rgba(0,0,0,0)",
+                tickfont=dict(size=14, color="#334155", family="Inter"),
+            )
         ),
-        font=dict(color="#10233F", size=15, family="Inter"),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        height=500,
+        margin=dict(l=40, r=40, t=80, b=80),
         legend=dict(
             orientation="h",
-            y=-0.16,
-            x=0.02,
-            font=dict(size=13, color="#10233F", family="Inter"),
-            bgcolor="rgba(255,255,255,0.86)",
-            bordercolor="#DCE7F8",
-            borderwidth=1,
+            yanchor="bottom",
+            y=-0.2,
+            xanchor="center",
+            x=0.5,
+            font=dict(family="Inter", size=13, color="#334155"),
         ),
     )
 

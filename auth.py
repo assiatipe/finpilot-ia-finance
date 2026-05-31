@@ -10,7 +10,7 @@ import requests
 from datetime import datetime
 
 
-DB_PATH = "finpilot.db"
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "finpilot.db")
 SESSION_FILE = os.path.join(os.path.dirname(__file__), ".finpilot_session")
 
 # ============================================================

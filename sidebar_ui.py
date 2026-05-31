@@ -28,7 +28,11 @@ def _nav_button(label: str, page: str, key: str, active_page: str, page_key: str
         type="primary" if is_current else "secondary",
     ):
         if active_page != page_key:
-            st.switch_page(page)
+            if page == "app.py":
+                url = "/"
+            else:
+                url = "/" + page.replace("pages/", "").replace(".py", "")
+            st.markdown(f'<meta http-equiv="refresh" content="0; url={url}">', unsafe_allow_html=True)
 
 
 # ============================================================
@@ -389,6 +393,7 @@ def render_sidebar(active_page="dashboard", cash_balance=5100.0, logout_callback
 
     nav_items = [
         ("Accueil", "app.py", "dashboard"),
+        ("Assistant IA", "pages/assistant.py", "assistant"),
         ("Analyse IA", "pages/analyse.py", "analyse"),
         ("Portefeuille", "pages/portefeuille.py", "portefeuille"),
         ("Historique", "pages/historique.py", "historique"),
