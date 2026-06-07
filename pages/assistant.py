@@ -46,16 +46,17 @@ def get_svg_icon(name, width=20, height=20, color="currentColor"):
 render_sidebar(active_page="assistant")
 
 # ============================================================
-# CSS MINIMALISTE ET CENTRÉ (INSPIRATION "GLOW")
-# ============================================================
 st.markdown("""
 <style>
 /* Import de police premium */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
-/* Fond de la page luxueux */
+/* Fond de la page luxueux avec des orbes lumineuses floues */
 .stApp {
-    background: radial-gradient(circle at 50% 0%, #FFFFFF 0%, #F1F5F9 100%) !important;
+    background:
+        radial-gradient(circle at 15% 45%, rgba(35, 216, 240, 0.12), transparent 28%),
+        radial-gradient(circle at 85% 65%, rgba(122, 92, 255, 0.10), transparent 28%),
+        radial-gradient(circle at 50% 0%, #FFFFFF 0%, #F8FAFC 100%) !important;
     font-family: 'Inter', sans-serif !important;
 }
 
@@ -63,7 +64,7 @@ st.markdown("""
 .block-container {
     max-width: 800px !important;
     padding-top: 2rem !important;
-    padding-bottom: 8rem !important;
+    padding-bottom: 8.5rem !important;
 }
 
 /* En-tête centré premium */
@@ -83,41 +84,44 @@ st.markdown("""
 }
 
 .header-avatar-circle {
-    width: 72px;
-    height: 72px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     background: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1.2rem;
-    box-shadow: 0 10px 40px rgba(47, 124, 255, 0.15);
-    border: 1px solid rgba(47, 124, 255, 0.1);
     position: relative;
+    box-shadow: 0 10px 30px rgba(47, 124, 255, 0.12);
+    border: 2px solid transparent;
+    background-image: linear-gradient(white, white), linear-gradient(135deg, #2F7CFF, #23D8F0);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    margin-bottom: 1.2rem;
 }
 
 .header-avatar-circle::after {
     content: "";
     position: absolute;
-    top: -5px; right: -5px; bottom: -5px; left: -5px;
+    top: -6px; right: -6px; bottom: -6px; left: -6px;
     border-radius: 50%;
     background: linear-gradient(135deg, #2F7CFF, #23D8F0);
     z-index: -1;
-    opacity: 0.1;
-    filter: blur(10px);
+    opacity: 0.25;
+    filter: blur(12px);
 }
 
 .header-title {
-    font-size: 2.4rem;
-    font-weight: 700;
+    font-size: 2.5rem;
+    font-weight: 800;
     color: #0F172A;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Sora', sans-serif;
     margin-bottom: 0.4rem;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
 }
 
 .header-subtitle {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: #64748B;
     margin-bottom: 1.2rem;
     font-weight: 400;
@@ -127,13 +131,13 @@ st.markdown("""
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: rgba(16, 185, 129, 0.1);
+    background-color: rgba(16, 185, 129, 0.08);
     color: #059669;
     font-size: 0.85rem;
     font-weight: 600;
     padding: 0.4rem 1rem;
     border-radius: 30px;
-    border: 1px solid rgba(16, 185, 129, 0.2);
+    border: 1px solid rgba(16, 185, 129, 0.15);
 }
 
 .online-dot {
@@ -246,27 +250,43 @@ div[data-testid="column"] .stButton > button:hover {
     box-shadow: 0 8px 25px rgba(47, 124, 255, 0.2) !important;
 }
 
-/* Barre de saisie style "Îlot flottant" (Apple style) */
+/* Barre de saisie style "Îlot flottant" premium de la maquette */
 div[data-testid="stChatInput"] {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
-    padding-bottom: 2rem !important;
+    padding-bottom: 3.5rem !important;
     max-width: 750px !important;
     margin: 0 auto !important;
+    position: relative !important;
 }
 
 div[data-testid="stChatInput"] > div {
-    background: rgba(255, 255, 255, 0.9) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(226, 232, 240, 0.8) !important;
-    border-radius: 30px !important;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05) !important;
-    padding: 0.3rem 0.5rem 0.3rem 1.5rem !important;
+    border: 1px solid rgba(226, 232, 240, 0.9) !important;
+    border-radius: 35px !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.03) !important;
+    padding: 0.4rem 0.5rem 0.4rem 3.5rem !important;
+    position: relative !important;
+}
+
+div[data-testid="stChatInput"] > div::before {
+    content: "";
+    position: absolute;
+    left: 1.4rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232F7CFF' stroke='%232F7CFF' stroke-width='0'%3E%3Cpath d='M12 2c0 5.523 4.477 10 10 10-5.523 0-10 4.477-10 10 0-5.523-4.477-10-10-10 5.523 0 10-4.477 10-10z'%3E%3C/path%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
 }
 
 div[data-testid="stChatInput"] textarea {
-    font-size: 1.05rem !important;
+    font-size: 1rem !important;
     color: #1E293B !important;
     font-weight: 500 !important;
 }
@@ -274,18 +294,65 @@ div[data-testid="stChatInput"] textarea {
 /* Cacher le contour de focus orange dégueulasse de Streamlit */
 div[data-testid="stChatInput"] > div:focus-within {
     border-color: #2F7CFF !important;
-    box-shadow: 0 20px 40px rgba(47, 124, 255, 0.1), 0 0 0 3px rgba(47, 124, 255, 0.1) !important;
+    box-shadow: 0 15px 35px rgba(47, 124, 255, 0.1), 0 0 0 3px rgba(47, 124, 255, 0.15) !important;
+}
+
+/* Bouton envoyer rond avec dégradé bleu */
+div[data-testid="stChatInput"] button {
+    background: linear-gradient(135deg, #2F7CFF, #23D8F0) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 38px !important;
+    height: 38px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 12px rgba(47, 124, 255, 0.3) !important;
+    transition: all 0.2s ease !important;
+    padding: 0 !important;
+}
+
+div[data-testid="stChatInput"] button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(47, 124, 255, 0.4) !important;
+}
+
+div[data-testid="stChatInput"] button svg {
+    color: white !important;
+    stroke: white !important;
+    fill: none !important;
+    stroke-width: 2.5px !important;
+}
+
+/* Pied de page de sécurité avec cadenas */
+div[data-testid="stChatInput"]::after {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: #64748B;
+    font-weight: 500;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'%3E%3C/rect%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left center;
+    padding-left: 1.2rem;
+    content: "Vos données sont sécurisées et confidentielles.";
+    pointer-events: none;
 }
 
 /* =========================================
    RESPONSIVITÉ (MOBILES & TABLETTES)
-========================================= */
+   ========================================= */
 @media (max-width: 768px) {
     .block-container {
         padding-top: 1rem !important;
         padding-left: 1rem !important;
         padding-right: 1rem !important;
-        padding-bottom: 7rem !important;
+        padding-bottom: 7.5rem !important;
     }
     
     .header-title {
@@ -297,13 +364,13 @@ div[data-testid="stChatInput"] > div:focus-within {
     }
     
     .header-avatar-circle {
-        width: 56px;
-        height: 56px;
+        width: 70px;
+        height: 70px;
         margin-bottom: 0.8rem;
     }
     
     .bubble-container {
-        max-width: 95%; /* Les bulles prennent plus de place sur petit écran */
+        max-width: 95%;
     }
     
     .assistant .bubble-container {
@@ -337,11 +404,20 @@ div[data-testid="stChatInput"] > div:focus-within {
 # ============================================================
 # EN-TÊTE CENTRÉ
 # ============================================================
-# ATTENTION: Aucun espace au début des balises HTML pour éviter que 
-# Streamlit ne le parse comme un bloc de code (```html).
+robot_face_svg = """<svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M22 10V6" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="22" cy="5" r="2" fill="#23D8F0"/>
+  <rect x="10" y="10" width="24" height="20" rx="7" fill="#0F172A"/>
+  <rect x="7" y="16" width="3" height="8" rx="1.5" fill="#2F7CFF"/>
+  <rect x="34" y="16" width="3" height="8" rx="1.5" fill="#2F7CFF"/>
+  <circle cx="17" cy="19" r="2.5" fill="#23D8F0"/>
+  <circle cx="27" cy="19" r="2.5" fill="#23D8F0"/>
+  <path d="M18 24C19.5 25.5 24.5 25.5 26 24" stroke="white" stroke-width="2" stroke-linecap="round"/>
+</svg>"""
+
 html_header = f"""<div class="header-container">
 <div class="header-avatar-circle">
-{get_svg_icon('robot', 36, 36, '#2F7CFF')}
+{robot_face_svg}
 </div>
 <div class="header-title">FinPilot Copilot</div>
 <div class="header-subtitle">Posez-moi vos questions sur la finance, je vous guide vers l'excellence.</div>
