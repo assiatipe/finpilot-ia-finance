@@ -1597,7 +1597,7 @@ def make_financial_radar_chart(top5):
         polar=dict(
             radialaxis=dict(
                 visible=True,
-                range=[0, 100],
+                range=[0, 1],
                 showticklabels=False,
                 showline=False,
                 gridcolor="rgba(226, 232, 240, 0.6)",
