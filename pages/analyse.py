@@ -1565,10 +1565,10 @@ def make_financial_radar_chart(top5):
 
     for i, (ticker, row) in enumerate(top5.iterrows()):
         values = [
-            row["rendement_norm"],
-            row["sigma_norm"],
-            row["beta_norm"],
-            row["sharpe_norm"],
+            row["rendement_norm"] * 5,
+            row["sigma_norm"] * 5,
+            row["beta_norm"] * 5,
+            row["sharpe_norm"] * 5,
         ]
         values = values + [values[0]]
         cats = categories + [categories[0]]
@@ -1584,7 +1584,7 @@ def make_financial_radar_chart(top5):
                 name=f"{row['nom']} ({ticker})",
                 line=dict(color=solid_color, width=3, shape="spline"),
                 marker=dict(size=8, color=solid_color, line=dict(color="white", width=2)),
-                hovertemplate="<b>%{theta}</b>: %{r:.2f}<extra></extra>",
+                hovertemplate="<b>%{theta}</b>: %{r:.2f}/5<extra></extra>",
             )
         )
 
@@ -1597,8 +1597,10 @@ def make_financial_radar_chart(top5):
         polar=dict(
             radialaxis=dict(
                 visible=True,
-                range=[0, 1],
-                showticklabels=False,
+                range=[0, 5],
+                dtick=1,
+                showticklabels=True,
+                tickfont=dict(size=12, color="#475569", family="Inter"),
                 showline=False,
                 gridcolor="rgba(226, 232, 240, 0.6)",
             ),
