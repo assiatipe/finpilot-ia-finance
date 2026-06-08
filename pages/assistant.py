@@ -54,88 +54,178 @@ st.markdown("""
 /* Fond de la page luxueux avec des orbes lumineuses floues */
 .stApp {
     background:
-        radial-gradient(circle at 15% 45%, rgba(35, 216, 240, 0.12), transparent 28%),
-        radial-gradient(circle at 85% 65%, rgba(122, 92, 255, 0.10), transparent 28%),
+        radial-gradient(circle at 10% 40%, rgba(35, 216, 240, 0.12), transparent 28%),
+        radial-gradient(circle at 90% 60%, rgba(122, 92, 255, 0.10), transparent 28%),
         radial-gradient(circle at 50% 0%, #FFFFFF 0%, #F8FAFC 100%) !important;
     font-family: 'Inter', sans-serif !important;
 }
 
-/* Centrer le conteneur principal */
+/* Centrer le conteneur principal (élargi pour accueillir les deux colonnes) */
 .block-container {
-    max-width: 800px !important;
-    padding-top: 2rem !important;
+    max-width: 1050px !important;
+    padding-top: 1.5rem !important;
     padding-bottom: 8.5rem !important;
 }
 
-/* En-tête centré premium */
-.header-container {
+/* ------------------------------------------------------
+   LEFT SIDEBAR CARD STYLE (MOCKUP)
+   ------------------------------------------------------ */
+.assistant-sidebar-card {
+    background-color: #0E1629;
+    border-radius: 24px;
+    padding: 2.2rem 1.6rem;
+    color: white;
+    min-height: 480px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    margin-bottom: 3rem;
-    animation: fadeInDown 0.8s ease-out;
+    justify-content: space-between;
+    box-shadow: 0 12px 32px rgba(14, 22, 41, 0.18);
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-@keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+.sidebar-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: 'Sora', sans-serif;
+    margin-bottom: 2rem;
+    color: white;
+    letter-spacing: -0.02em;
+}
+
+.sidebar-menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+    flex-grow: 1;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #64748B;
+    transition: color 0.2s ease;
+}
+
+.menu-item.active {
+    color: #F8FAFC;
+}
+
+.dot-online {
+    width: 8px;
+    height: 8px;
+    background-color: #10B981;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #10B981;
+}
+
+.diamond-bullet {
+    color: #818CF8;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.sidebar-stats-box {
+    background-color: #1E293B;
+    border-radius: 16px;
+    padding: 1.1rem;
+    margin-top: auto;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.stats-label {
+    font-size: 0.72rem;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.4rem;
+    font-weight: 700;
+}
+
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stats-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+    font-family: 'Sora', sans-serif;
+}
+
+.stats-badge {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #10B981;
+    background-color: rgba(16, 185, 129, 0.12);
+    padding: 0.2rem 0.5rem;
+    border-radius: 30px;
+}
+
+/* ------------------------------------------------------
+   RIGHT CHAT VIEW & BUBBLES
+   ------------------------------------------------------ */
+.header-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    justify-content: flex-start;
+    margin-bottom: 2.5rem;
 }
 
 .header-avatar-circle {
-    width: 90px;
-    height: 90px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     background: white;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    box-shadow: 0 10px 30px rgba(47, 124, 255, 0.12);
+    box-shadow: 0 8px 25px rgba(47, 124, 255, 0.1);
     border: 2px solid transparent;
     background-image: linear-gradient(white, white), linear-gradient(135deg, #2F7CFF, #23D8F0);
     background-origin: border-box;
     background-clip: padding-box, border-box;
-    margin-bottom: 1.2rem;
+    margin-bottom: 0;
+    flex-shrink: 0;
 }
 
 .header-avatar-circle::after {
     content: "";
     position: absolute;
-    top: -6px; right: -6px; bottom: -6px; left: -6px;
+    top: -5px; right: -5px; bottom: -5px; left: -5px;
     border-radius: 50%;
     background: linear-gradient(135deg, #2F7CFF, #23D8F0);
     z-index: -1;
-    opacity: 0.25;
-    filter: blur(12px);
+    opacity: 0.2;
+    filter: blur(10px);
 }
 
 .header-title {
-    font-size: 2.5rem;
+    font-size: 1.85rem;
     font-weight: 800;
     color: #0F172A;
     font-family: 'Sora', sans-serif;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0;
     letter-spacing: -0.03em;
-}
-
-.header-subtitle {
-    font-size: 1.05rem;
-    color: #64748B;
-    margin-bottom: 1.2rem;
-    font-weight: 400;
 }
 
 .online-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
     background-color: rgba(16, 185, 129, 0.08);
     color: #059669;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 600;
-    padding: 0.4rem 1rem;
+    padding: 0.35rem 0.85rem;
     border-radius: 30px;
     border: 1px solid rgba(16, 185, 129, 0.15);
 }
@@ -145,7 +235,7 @@ st.markdown("""
     height: 8px;
     background-color: #10B981;
     border-radius: 50%;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
     animation: pulse-green 2s infinite;
 }
 
@@ -158,13 +248,13 @@ st.markdown("""
 /* Structure des bulles de chat avec animation */
 .chat-row {
     display: flex;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     width: 100%;
-    animation: fadeInUp 0.5s ease-out forwards;
+    animation: fadeInUp 0.4s ease-out forwards;
 }
 
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(15px); }
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
@@ -177,22 +267,22 @@ st.markdown("""
 }
 
 .bubble-container {
-    max-width: 80%;
+    max-width: 85%;
     display: flex;
     flex-direction: column;
 }
 
 .assistant .bubble-container {
-    flex-direction: row;
+    flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 0;
 }
 
 .bubble {
-    padding: 1.2rem 1.5rem;
-    border-radius: 24px;
-    font-size: 1.05rem;
-    line-height: 1.6;
+    padding: 1rem 1.4rem;
+    border-radius: 20px;
+    font-size: 1rem;
+    line-height: 1.5;
     letter-spacing: -0.01em;
 }
 
@@ -200,33 +290,21 @@ st.markdown("""
     margin: 0;
 }
 
-/* Design Premium de la Bulle Utilisateur */
+/* Bulle Utilisateur (Indigo) */
 .bubble.user {
-    background: linear-gradient(135deg, #1E293B, #0F172A);
-    color: white;
-    border-bottom-right-radius: 6px;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+    background: #6366F1 !important;
+    color: white !important;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15) !important;
 }
 
-/* Design Premium de la Bulle IA */
+/* Bulle Assistant (Gris-bleu clair) */
 .bubble.assistant {
-    background-color: #FFFFFF;
-    color: #334155;
-    border-bottom-left-radius: 6px;
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.04);
-}
-
-.assistant-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #2F7CFF, #23D8F0);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 4px 15px rgba(47, 124, 255, 0.2);
+    background-color: #F8FAFC !important;
+    color: #1E293B !important;
+    border-bottom-left-radius: 4px;
+    border: 1px solid #E2E8F0 !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02) !important;
 }
 
 /* Boutons de suggestions (Pilules Glassmorphism) */
@@ -237,17 +315,17 @@ div[data-testid="column"] .stButton > button {
     backdrop-filter: blur(10px) !important;
     color: #2F7CFF !important;
     font-weight: 600 !important;
-    font-size: 0.9rem !important;
-    padding: 0.6rem 1.2rem !important;
+    font-size: 0.88rem !important;
+    padding: 0.5rem 1rem !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.02) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.01) !important;
 }
 
 div[data-testid="column"] .stButton > button:hover {
     background: #2F7CFF !important;
     color: white !important;
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(47, 124, 255, 0.2) !important;
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 6px 18px rgba(47, 124, 255, 0.18) !important;
 }
 
 /* Barre de saisie style "Îlot flottant" premium de la maquette */
@@ -256,8 +334,8 @@ div[data-testid="stChatInput"] {
     border: none !important;
     box-shadow: none !important;
     padding-bottom: 3.5rem !important;
-    max-width: 750px !important;
-    margin: 0 auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
     position: relative !important;
 }
 
@@ -267,26 +345,12 @@ div[data-testid="stChatInput"] > div {
     border: 1px solid rgba(226, 232, 240, 0.9) !important;
     border-radius: 35px !important;
     box-shadow: 0 15px 35px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.03) !important;
-    padding: 0.4rem 0.5rem 0.4rem 3.5rem !important;
+    padding: 0.4rem 0.5rem 0.4rem 1.5rem !important;
     position: relative !important;
 }
 
-div[data-testid="stChatInput"] > div::before {
-    content: "";
-    position: absolute;
-    left: 1.4rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232F7CFF' stroke='%232F7CFF' stroke-width='0'%3E%3Cpath d='M12 2c0 5.523 4.477 10 10 10-5.523 0-10 4.477-10 10 0-5.523-4.477-10-10-10 5.523 0 10-4.477 10-10z'%3E%3C/path%3E%3C/svg%3E");
-    background-size: contain;
-    background-repeat: no-repeat;
-    pointer-events: none;
-}
-
 div[data-testid="stChatInput"] textarea {
-    font-size: 1rem !important;
+    font-size: 0.98rem !important;
     color: #1E293B !important;
     font-weight: 500 !important;
 }
@@ -297,24 +361,25 @@ div[data-testid="stChatInput"] > div:focus-within {
     box-shadow: 0 15px 35px rgba(47, 124, 255, 0.1), 0 0 0 3px rgba(47, 124, 255, 0.15) !important;
 }
 
-/* Bouton envoyer rond avec dégradé bleu */
+/* Bouton envoyer rond bleu avec flèche blanche */
 div[data-testid="stChatInput"] button {
-    background: linear-gradient(135deg, #2F7CFF, #23D8F0) !important;
+    background: #2563EB !important;
     border: none !important;
     border-radius: 50% !important;
-    width: 38px !important;
-    height: 38px !important;
+    width: 36px !important;
+    height: 36px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    box-shadow: 0 4px 12px rgba(47, 124, 255, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
     transition: all 0.2s ease !important;
     padding: 0 !important;
 }
 
 div[data-testid="stChatInput"] button:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 16px rgba(47, 124, 255, 0.4) !important;
+    background: #1D4ED8 !important;
+    box-shadow: 0 4px 12px rgba(29, 78, 216, 0.35) !important;
 }
 
 div[data-testid="stChatInput"] button svg {
@@ -322,26 +387,6 @@ div[data-testid="stChatInput"] button svg {
     stroke: white !important;
     fill: none !important;
     stroke-width: 2.5px !important;
-}
-
-/* Pied de page de sécurité avec cadenas */
-div[data-testid="stChatInput"]::after {
-    position: absolute;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.8rem;
-    color: #64748B;
-    font-weight: 500;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'%3E%3C/rect%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'%3E%3C/path%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: left center;
-    padding-left: 1.2rem;
-    content: "Vos données sont sécurisées et confidentielles.";
-    pointer-events: none;
 }
 
 /* =========================================
@@ -356,35 +401,21 @@ div[data-testid="stChatInput"]::after {
     }
     
     .header-title {
-        font-size: 1.8rem;
-    }
-    
-    .header-subtitle {
-        font-size: 0.95rem;
+        font-size: 1.6rem;
     }
     
     .header-avatar-circle {
-        width: 70px;
-        height: 70px;
-        margin-bottom: 0.8rem;
+        width: 44px;
+        height: 44px;
     }
     
     .bubble-container {
         max-width: 95%;
     }
     
-    .assistant .bubble-container {
-        gap: 0.5rem;
-    }
-    
     .bubble {
-        padding: 1rem 1.2rem;
-        font-size: 1rem;
-    }
-    
-    .assistant-avatar {
-        width: 30px;
-        height: 30px;
+        padding: 0.9rem 1.1rem;
+        font-size: 0.95rem;
     }
     
     div[data-testid="stChatInput"] {
@@ -394,17 +425,49 @@ div[data-testid="stChatInput"]::after {
     }
     
     div[data-testid="column"] .stButton > button {
-        font-size: 0.85rem !important;
-        padding: 0.5rem 1rem !important;
+        font-size: 0.82rem !important;
+        padding: 0.4rem 0.8rem !important;
     }
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ============================================================
-# EN-TÊTE CENTRÉ
-# ============================================================
-robot_face_svg = """<svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+# Custom Assistant Sidebar Card HTML
+html_sidebar = """
+<div class="assistant-sidebar-card">
+    <div>
+        <div class="sidebar-title">Assistant</div>
+        <div class="sidebar-menu-list">
+            <div class="menu-item active">
+                <span class="dot-online"></span>
+                <span>En ligne</span>
+            </div>
+            <div class="menu-item">
+                <span class="diamond-bullet">♦</span>
+                <span>FAQ finance</span>
+            </div>
+            <div class="menu-item">
+                <span class="diamond-bullet">♦</span>
+                <span>Actions</span>
+            </div>
+            <div class="menu-item">
+                <span class="diamond-bullet">♦</span>
+                <span>Risques</span>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar-stats-box">
+        <div class="stats-label">Questions traitées</div>
+        <div class="stats-row">
+            <span class="stats-value">128</span>
+            <span class="stats-badge">+12%</span>
+        </div>
+    </div>
+</div>
+"""
+
+# Avatar & Header setup
+robot_face_svg = """<svg width="32" height="32" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M22 10V6" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round"/>
   <circle cx="22" cy="5" r="2" fill="#23D8F0"/>
   <rect x="10" y="10" width="24" height="20" rx="7" fill="#0F172A"/>
@@ -420,13 +483,10 @@ html_header = f"""<div class="header-container">
 {robot_face_svg}
 </div>
 <div class="header-title">FinPilot Copilot</div>
-<div class="header-subtitle">Posez-moi vos questions sur la finance, je vous guide vers l'excellence.</div>
 <div class="online-badge">
 <span class="online-dot"></span> En ligne
 </div>
 </div>"""
-
-st.markdown(html_header, unsafe_allow_html=True)
 
 # ============================================================
 # GESTION DE L'ETAT
@@ -440,97 +500,91 @@ def set_prompt(text):
     st.session_state.pending_prompt = text
 
 # ============================================================
-# HISTORIQUE (SANS ESPACES D'INDENTATION)
+# RENDERING SPLIT LAYOUT
 # ============================================================
+col_left, col_right = st.columns([1, 2.3], gap="large")
 
-# 1. Affichage de l'historique
-for msg in st.session_state.messages:
-    if msg["role"] == "user":
-        content_html = msg['content'].replace('\n', '<br>')
-        html_msg = f"""<div class="chat-row user">
+with col_left:
+    st.markdown(html_sidebar, unsafe_allow_html=True)
+
+with col_right:
+    # 1. En-tête horizontal
+    st.markdown(html_header, unsafe_allow_html=True)
+    
+    # 2. Affichage de l'historique
+    for msg in st.session_state.messages:
+        if msg["role"] == "user":
+            content_html = msg['content'].replace('\n', '<br>')
+            html_msg = f"""<div class="chat-row user">
 <div class="bubble-container">
 <div class="bubble user">
 {content_html}
 </div>
 </div>
 </div>"""
-        st.markdown(html_msg, unsafe_allow_html=True)
-    else:
-        content_html = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', msg['content'])
-        content_html = content_html.replace('\n', '<br>')
-        html_msg = f"""<div class="chat-row assistant">
+            st.markdown(html_msg, unsafe_allow_html=True)
+        else:
+            content_html = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', msg['content'])
+            content_html = content_html.replace('\n', '<br>')
+            html_msg = f"""<div class="chat-row assistant">
 <div class="bubble-container">
-<div class="assistant-avatar">
-{get_svg_icon('robot', 20, 20, 'white')}
-</div>
 <div class="bubble assistant">
 {content_html}
 </div>
 </div>
 </div>"""
-        st.markdown(html_msg, unsafe_allow_html=True)
+            st.markdown(html_msg, unsafe_allow_html=True)
 
-# 2. Affichage conditionnel des suggestions UNIQUEMENT si le dernier message est l'accueil
-if len(st.session_state.messages) == 1:
-    c1, c2, c3, c4 = st.columns(4)
-    with c1:
-        st.button("Mon portefeuille", on_click=set_prompt, args=("Peux-tu analyser mon portefeuille ?",), use_container_width=True)
-    with c2:
-        st.button("Actualités", on_click=set_prompt, args=("Quelles sont les actualités ?",), use_container_width=True)
-    with c3:
-        st.button("Guide débutant", on_click=set_prompt, args=("Je suis débutante, par où commencer ?",), use_container_width=True)
-    with c4:
-        st.button("Idées d'actions", on_click=set_prompt, args=("As-tu des idées d'investissement ?",), use_container_width=True)
+    # 3. Suggestions d'action
+    if len(st.session_state.messages) == 1:
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            st.button("Mon portefeuille", on_click=set_prompt, args=("Peux-tu analyser mon portefeuille ?",), use_container_width=True)
+        with c2:
+            st.button("Actualités", on_click=set_prompt, args=("Quelles sont les actualités ?",), use_container_width=True)
+        with c3:
+            st.button("Guide débutant", on_click=set_prompt, args=("Je suis débutante, par où commencer ?",), use_container_width=True)
+        with c4:
+            st.button("Idées d'actions", on_click=set_prompt, args=("As-tu des idées d'investissement ?",), use_container_width=True)
 
-# 3. Traitement de la réponse en cours
-if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] == "user":
-    
-    # Structure de chargement sans indentation
-    html_loading_start = f"""<div class="chat-row assistant" style="margin-top:1rem;">
+    # 4. Traitement du message utilisateur en cours
+    if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] == "user":
+        html_loading_start = f"""<div class="chat-row assistant" style="margin-top:1rem;">
 <div class="bubble-container">
-<div class="assistant-avatar" style="animation: pulse 1s infinite;">
-{get_svg_icon('robot', 20, 20, 'white')}
-</div>
 <div class="bubble assistant">"""
-    
-    st.markdown(html_loading_start, unsafe_allow_html=True)
-    message_placeholder = st.empty()
-    
-    html_loading_end = """</div>
+        st.markdown(html_loading_start, unsafe_allow_html=True)
+        message_placeholder = st.empty()
+        
+        html_loading_end = """</div>
 </div>
-</div>
-<style>@keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }</style>"""
-    st.markdown(html_loading_end, unsafe_allow_html=True)
+</div>"""
+        st.markdown(html_loading_end, unsafe_allow_html=True)
 
-    stream = get_chat_response(
-        messages=[{"role": m["role"], "content": m["content"]} for m in st.session_state.messages[1:]], 
-        user_id=user_id, 
-        username=username
-    )
-    
-    full_response = ""
-    for chunk in stream:
-        full_response += chunk
-        message_placeholder.markdown(full_response + "▌")
-    
-    message_placeholder.markdown(full_response)
-    
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
-    st.rerun()
+        stream = get_chat_response(
+            messages=[{"role": m["role"], "content": m["content"]} for m in st.session_state.messages[1:]], 
+            user_id=user_id, 
+            username=username
+        )
+        
+        full_response = ""
+        for chunk in stream:
+            full_response += chunk
+            message_placeholder.markdown(full_response + "▌")
+        
+        message_placeholder.markdown(full_response)
+        
+        st.session_state.messages.append({"role": "assistant", "content": full_response})
+        st.rerun()
 
-# ============================================================
-# ENTREE UTILISATEUR
-# ============================================================
-prompt = st.chat_input("Posez une question ou tapez un mot-clé...")
+    # 5. Saisie utilisateur
+    prompt = st.chat_input("Posez une question sur la finance...")
 
-if "pending_prompt" in st.session_state and st.session_state.pending_prompt:
-    prompt = st.session_state.pending_prompt
-    st.session_state.pending_prompt = None
+    if "pending_prompt" in st.session_state and st.session_state.pending_prompt:
+        prompt = st.session_state.pending_prompt
+        st.session_state.pending_prompt = None
 
-if prompt:
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    st.rerun()
+    if prompt:
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        st.rerun()
 
-# Espacement dynamique pour pousser la page vers le haut et éviter que 
-# la barre de saisie fixe (st.chat_input) ne cache le dernier message.
-st.markdown("<div style='height: 150px; width: 100%;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 150px; width: 100%;'></div>", unsafe_allow_html=True)
